@@ -15,6 +15,7 @@ export function runPreflight(config: AgentConfig): PreflightResult {
       whyItMatters: r.whyItMatters,
       recommendedAction: r.recommendedAction,
       affectedField: r.affectedField,
+      passed: r.passed,
     }));
 
   const score = computeScore(ruleResults);

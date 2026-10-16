@@ -36,6 +36,7 @@ export interface Finding {
   whyItMatters: string;
   recommendedAction: string;
   affectedField: string;
+  passed: boolean;
 }
 
 export interface PreflightResult {
