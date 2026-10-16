@@ -32,8 +32,8 @@ This is an independent product concept I built as part of my application to Vaan
 
 It doesn't connect to the Vaani platform. It doesn't simulate a live call. It's a configuration linter — a pre-flight check for the class of silent failures that only show up when a real customer is on the line.
 
-GitHub: [ADD REPO LINK]
-Live demo: [ADD DEMO LINK]
+GitHub: https://github.com/vigasinii/vaani-preflight
+Live demo: [ADD DEMO LINK — deploy to Vercel for free]
 
 ---
 
