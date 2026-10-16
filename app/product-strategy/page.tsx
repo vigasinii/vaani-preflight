@@ -207,50 +207,45 @@ export default function ProductStrategyPage() {
     { id: "roadmap", label: "J. Roadmap" },
   ];
 
+  const currentIdx = sections.findIndex(s => s.id === activeSection);
+  const prev = sections[currentIdx - 1];
+  const next = sections[currentIdx + 1];
+
   return (
     <AppShell breadcrumb="Product Strategy">
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-          Independent Product Exploration · Not an official Vaani feature
-        </div>
-        <h1 style={{ fontSize: 26, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 4px" }}>
           Product Strategy
         </h1>
-        <p style={{ fontSize: 14, color: "var(--color-text-secondary)", margin: "0 0 4px", lineHeight: 1.6, maxWidth: 680 }}>
-          Vaani makes building voice agents remarkably accessible. This exploration investigates what comes next in that journey - helping builders launch with confidence.
-        </p>
-        <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic" }}>
-          All claims are clearly labeled as hypotheses, directional estimates, or observations from a single exploratory session.
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: 0 }}>
+          What exists, what's next, and what's exploratory.
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 24, alignItems: "start" }} className="strategy-grid">
+      {/* Tab bar */}
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 28, borderBottom: "1px solid var(--color-border)", paddingBottom: 0 }}>
+        {sections.map(s => (
+          <button
+            key={s.id}
+            onClick={() => setActiveSection(s.id)}
+            style={{
+              padding: "7px 14px", fontSize: 12, fontWeight: activeSection === s.id ? 600 : 400,
+              color: activeSection === s.id ? "var(--color-accent)" : "var(--color-text-secondary)",
+              background: "none", border: "none",
+              borderBottom: activeSection === s.id ? "2px solid var(--color-accent)" : "2px solid transparent",
+              cursor: "pointer", marginBottom: -1, borderRadius: 0, whiteSpace: "nowrap",
+            }}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
 
-        {/* Sticky nav */}
-        <nav style={{ position: "sticky", top: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Sections</div>
-          {sections.map(s => (
-            <a
-              key={s.id}
-              href={`#${s.id}`}
-              onClick={() => setActiveSection(s.id)}
-              style={{
-                display: "block", padding: "5px 10px", fontSize: 12, borderRadius: "var(--radius-sm)",
-                color: activeSection === s.id ? "var(--color-accent)" : "var(--color-text-secondary)",
-                background: activeSection === s.id ? "var(--color-accent-tint)" : "transparent",
-                textDecoration: "none", marginBottom: 2,
-              }}
-            >
-              {s.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Content */}
-        <div>
+      {/* Content - single section at a time */}
+      <div style={{ maxWidth: 800 }}>
 
           {/* A. Opportunity */}
-          <Section id="opportunity">
+          {activeSection === "opportunity" && <Section id="opportunity">
             <SectionHead label="A · Product Opportunity" title="From creation to launch confidence" />
             <Card accent>
               <p style={{ fontSize: 15, fontWeight: 500, color: "var(--color-accent)", margin: "0 0 12px", lineHeight: 1.6 }}>
@@ -270,12 +265,10 @@ export default function ProductStrategyPage() {
                 <strong>Hypothesis:</strong> An optional readiness layer - one that surfaces configuration gaps, offers guided recommendations, and enables controlled testing - could improve first-deployment confidence without adding friction to the core creation flow. This prototype explores what that experience might look like.
               </p>
             </div>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* B. Persona */}
-          <Section id="persona">
+          {activeSection === "persona" && <Section id="persona">
             <SectionHead label="B · Target Persona" title="The first-time builder" sub="Primary persona for this exploration. Not based on conducted interviews." />
 
             <Grid cols={2}>
@@ -325,12 +318,10 @@ export default function ProductStrategyPage() {
                 </div>
               </Card>
             </div>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* C. Journey */}
-          <Section id="journey">
+          {activeSection === "journey" && <Section id="journey">
             <SectionHead label="C · User Journey" title="Where Preflight fits" sub="The full builder journey, with opportunities for a readiness experience." />
             <Card>
               <JourneyStep step="Create" title="Build an agent on Vaani" desc="The builder designs the agent's objective, configures its voice, and writes the system prompt. Vaani makes this fast and accessible - often completed in a single session." />
@@ -339,12 +330,10 @@ export default function ProductStrategyPage() {
               <JourneyStep step="Launch" title="Expose to real customers" desc="The agent goes live. Issues that weren't caught in testing appear in real conversations - often identified through customer complaints or missed leads." preflightNote="The readiness score and blocking issue list provide a structured launch gate the builder can apply on their own terms." />
               <JourneyStep step="Learn" title="Improve based on outcomes" desc="Call data, transcripts, and customer feedback inform the next iteration. Without tooling, this loop is slow and reactive." preflightNote="Transcript retrieval and before/after comparison surface evidence for improvement decisions." />
             </Card>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* D. Evidence */}
-          <Section id="evidence">
+          {activeSection === "evidence" && <Section id="evidence">
             <SectionHead label="D · Discovery Evidence" title="One exploratory session" sub="Screenshots from a real Vaani platform session. Single data point - not representative of platform behavior broadly." />
             <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 12, color: "var(--color-text-primary)", marginBottom: 20, lineHeight: 1.6 }}>
               <strong>Context:</strong> A real-estate lead qualification agent was built and tested on the Vaani platform. The session surfaced two observable gaps that informed the Preflight hypothesis. No causal claims are made about Vaani's defaults.
@@ -444,12 +433,10 @@ export default function ProductStrategyPage() {
             <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: "var(--radius-md)", background: "var(--color-accent-tint)", border: "1px solid #c4b5fd", fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.65 }}>
               <strong style={{ color: "var(--color-accent)" }}>What this session surfaced:</strong> A first-time builder, following Vaani's standard setup flow, can publish a live agent that has no functional path for escalation - because the relevant tools are off by default and the configuration screen doesn't surface the gap until you look for it. Preflight is designed to catch exactly this before the first real call.
             </div>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* E. Hypothesis */}
-          <Section id="hypothesis">
+          {activeSection === "hypothesis" && <Section id="hypothesis">
             <SectionHead label="E · Opportunity Hypothesis" title="The specific bet" />
             <Card accent>
               <div style={{ fontSize: 15, fontWeight: 500, color: "var(--color-accent)", lineHeight: 1.65, margin: "0 0 12px" }}>
@@ -470,12 +457,10 @@ export default function ProductStrategyPage() {
                 <div style={{ fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.55 }}>Readiness checks add perceived friction. False positives or over-engineering warnings could delay deployments unnecessarily.</div>
               </Card>
             </div>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* F. Prioritization */}
-          <Section id="prioritization">
+          {activeSection === "prioritization" && <Section id="prioritization">
             <SectionHead label="F · Prioritization" title="What we built and why" sub="Impact vs. effort across candidate opportunities. Scores are directional, not measured." />
             <PriorityMatrix />
 
@@ -487,12 +472,10 @@ export default function ProductStrategyPage() {
                 This keeps the experience fast, reliable, and explainable. A builder who sees a failing check can understand exactly why and act on it immediately.
               </p>
             </div>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* G. What we didn't build */}
-          <Section id="not-built">
+          {activeSection === "not-built" && <Section id="not-built">
             <SectionHead label="G · What We Deliberately Did Not Build" title="Scope restraint as a product decision" />
 
             {[
@@ -522,12 +505,10 @@ export default function ProductStrategyPage() {
                 <div style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6 }}>{row.why}</div>
               </div>
             ))}
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* H. Metrics */}
-          <Section id="metrics">
+          {activeSection === "metrics" && <Section id="metrics">
             <SectionHead label="H · Success Metrics" title="How we'd know if this works" />
             <Card>
               <MetricRow
@@ -566,12 +547,10 @@ export default function ProductStrategyPage() {
                 metric="If more than 30% of Preflight sessions result in no actionable findings on an agent that later works well, the checks may be too aggressive."
               />
             </Card>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* I. Experiment */}
-          <Section id="experiment">
+          {activeSection === "experiment" && <Section id="experiment">
             <SectionHead label="I · Experiment Design" title="How we'd test the hypothesis" sub="A proposed optional-exposure A/B test. Not yet run. No measured outcomes to report." />
 
             <Grid cols={2}>
@@ -610,12 +589,10 @@ export default function ProductStrategyPage() {
                 </div>
               </Card>
             </div>
-          </Section>
-
-          <Divider />
+          </Section>}
 
           {/* J. Roadmap */}
-          <Section id="roadmap">
+          {activeSection === "roadmap" && <Section id="roadmap">
             <SectionHead label="J · Product Roadmap" title="What exists, what's next, and what's exploratory" />
 
             <div style={{ marginBottom: 20 }}>
@@ -640,15 +617,22 @@ export default function ProductStrategyPage() {
               <RoadmapItem status="exploratory" title="Aggregate insights from consenting users" desc="Anonymized signals across readiness reviews could surface which configuration gaps are most common, informing both the tool and Vaani's product direction." />
               <RoadmapItem status="exploratory" title="Collaborative review flows" desc="Allow a team member or advisor to review and comment on readiness findings before deployment - relevant for slightly larger organizations." />
             </div>
-          </Section>
+          </Section>}
 
+        {/* Prev / Next navigation */}
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 32, paddingTop: 20, borderTop: "1px solid var(--color-border)" }}>
+          {prev ? (
+            <button onClick={() => setActiveSection(prev.id)} style={{ padding: "7px 16px", fontSize: 12, fontWeight: 500, background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", color: "var(--color-text-secondary)", cursor: "pointer" }}>
+              ← {prev.label}
+            </button>
+          ) : <div />}
+          {next ? (
+            <button onClick={() => setActiveSection(next.id)} style={{ padding: "7px 16px", fontSize: 12, fontWeight: 600, background: "var(--color-accent)", border: "none", borderRadius: "var(--radius-md)", color: "#fff", cursor: "pointer" }}>
+              {next.label} →
+            </button>
+          ) : <div />}
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 900px) { .strategy-grid { grid-template-columns: 1fr !important; } }
-        @media (max-width: 900px) nav[style*="sticky"] { position: static !important; }
-      `}</style>
     </AppShell>
   );
 }
