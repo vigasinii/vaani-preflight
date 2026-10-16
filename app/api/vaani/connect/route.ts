@@ -1,11 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { checkAuth } from "@/lib/vaani/client";
-import { isAuthenticated } from "@/lib/auth";
 
-export async function GET(req: NextRequest) {
-  if (!isAuthenticated(req)) {
-    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
-  }
+export async function GET() {
   const result = await checkAuth();
   if (!result.ok) {
     return NextResponse.json({ error: result.message }, { status: result.status || 500 });

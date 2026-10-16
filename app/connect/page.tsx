@@ -1,9 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import type { VaaniAgent } from "@/lib/vaani/types";
-import { DEMO_FIXTURE } from "@/lib/demo-fixtures";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -106,68 +104,9 @@ async function buildRoom() {
   return { Room, RoomEvent, Track };
 }
 
-// ─── Demo mode panel ──────────────────────────────────────────────────────────
-
-function DemoModePanel({ onLogin }: { onLogin: () => void }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{
-        padding: "12px 16px", borderRadius: "var(--radius-md)",
-        background: "var(--color-accent-tint)", border: "1px solid #c4b5fd",
-        display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12,
-      }}>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-accent)", marginBottom: 3 }}>Public Demo Mode</div>
-          <div style={{ fontSize: 12, color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
-            Exploring sample data — no real Vaani API calls are made here.
-            Live sessions require owner authentication.
-          </div>
-        </div>
-        <Btn onClick={onLogin} variant="outline" size="sm">Owner Login →</Btn>
-      </div>
-
-      <Panel>
-        <PanelHead title="Sample Agent" sub="Illustrative only — not connected to Vaani" right={<Tag color="grey">SAMPLE DATA</Tag>} />
-        <div style={{ padding: 16 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 4 }}>{DEMO_FIXTURE.name}</div>
-          <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 20 }}>{DEMO_FIXTURE.objective}</div>
-
-          <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            What happens in a live session
-          </div>
-          {[
-            { icon: "🔐", label: "Server-side auth", desc: "API key never leaves the server. A session cookie validates the owner." },
-            { icon: "🤖", label: "Select agent", desc: "Choose from agents on your verified Vaani account." },
-            { icon: "🎙", label: "WebRTC connection", desc: "Mic and speaker connected via LiveKit. No outbound phone call placed." },
-            { icon: "📝", label: "Live captions", desc: "Real-time caption stream from Vaani's WebSocket endpoint." },
-            { icon: "📄", label: "Session transcript", desc: "Full transcript retrieved post-call from GET /api/transcript/." },
-          ].map((row, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, padding: "8px 0", borderTop: "1px solid var(--color-border)" }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>{row.icon}</span>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)" }}>{row.label}</div>
-                <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 1 }}>{row.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Panel>
-
-      <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", fontSize: 12, color: "var(--color-text-secondary)", border: "1px solid var(--color-border)", background: "var(--color-bg)", lineHeight: 1.6 }}>
-        <strong>Why owner-only for live sessions?</strong> Real sessions consume Vaani account credits.
-        Restricting access prevents unauthorized use while keeping the product experience open to anyone.
-      </div>
-    </div>
-  );
-}
-
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function ConnectPage() {
-  const router = useRouter();
-  const [authChecked, setAuthChecked] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
-
   const [agentVerified, setAgentVerified] = useState(false);
   const [agentCount, setAgentCount] = useState(0);
   const [verifying, setVerifying] = useState(false);
@@ -193,13 +132,6 @@ export default function ConnectPage() {
   const timer = useTimer(phase === "live");
 
   useEffect(() => { captionEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [captions]);
-
-  useEffect(() => {
-    fetch("/api/auth/status")
-      .then(r => r.json())
-      .then(d => { setIsOwner(!!d.authenticated); setAuthChecked(true); })
-      .catch(() => setAuthChecked(true));
-  }, []);
 
   useEffect(() => {
     return () => { wsRef.current?.close(); roomRef.current?.disconnect(); };
@@ -337,235 +269,205 @@ export default function ConnectPage() {
     setMuted(m => !m);
   }
 
-  async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setIsOwner(false); setAgentVerified(false); setAgents([]); setSelectedAgent(null);
-    setPhase("idle"); setCaptions([]); setTranscript({ status: "idle" }); setSession(null);
-  }
-
-  if (!authChecked) {
-    return (
-      <AppShell breadcrumb="Connect">
-        <div style={{ padding: "60px 0", textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>Checking access…</div>
-      </AppShell>
-    );
-  }
-
   return (
     <AppShell breadcrumb="Connect · Vaani Integration">
       <div ref={audioContainerRef} style={{ display: "none" }} aria-hidden />
 
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 5 }}>
-          {isOwner ? "Live Integration · Owner Mode" : "Public Demo · Sample Data"}
+          Live Integration
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <div>
-            <h1 style={{ fontSize: 22, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 4px" }}>Connect</h1>
-            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: 0 }}>
-              {isOwner
-                ? "Real Vaani agents · WebRTC audio via LiveKit · Live captions and transcript retrieval."
-                : "Explore the live connection experience. Owner authentication required for real sessions."}
-            </p>
-          </div>
-          {isOwner && (
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <Tag color="green">● Owner Mode</Tag>
-              <Btn onClick={logout} variant="ghost" size="sm">Sign out</Btn>
+        <h1 style={{ fontSize: 22, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 4px" }}>Connect</h1>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: 0 }}>
+          Real Vaani agents · WebRTC audio via LiveKit · Live captions and transcript retrieval.
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 16, alignItems: "start" }} className="connect-grid">
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <Panel>
+            <PanelHead title="Vaani Account" sub="Server-side key · never exposed to browser" />
+            <div style={{ padding: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <Dot color={agentVerified ? "green" : verifyError ? "red" : "grey"} />
+                <span style={{ fontSize: 13, color: "var(--color-text-primary)" }}>
+                  {agentVerified ? `Verified · ${agentCount} agent${agentCount !== 1 ? "s" : ""}` : verifyError || "Not verified"}
+                </span>
+              </div>
+              <Btn onClick={verifyConnection} variant={agentVerified ? "ghost" : "primary"} disabled={verifying} size="sm">
+                {verifying ? "Verifying…" : agentVerified ? "Re-verify" : "Verify Connection"}
+              </Btn>
             </div>
+          </Panel>
+
+          <Panel>
+            <PanelHead title="Agents" sub="GET /api/agents" right={agentVerified && <Btn onClick={loadAgents} variant="ghost" size="sm" disabled={agentsLoading}>{agentsLoading ? "…" : "↻"}</Btn>} />
+            <div style={{ padding: 8 }}>
+              {!agentVerified ? (
+                <div style={{ padding: "10px 8px", fontSize: 12, color: "var(--color-text-secondary)", textAlign: "center" }}>Verify connection first.</div>
+              ) : agentsLoading ? (
+                <div style={{ padding: "10px 8px", fontSize: 12, color: "var(--color-text-secondary)", textAlign: "center" }}>Loading…</div>
+              ) : agents.length === 0 ? (
+                <div style={{ padding: "10px 8px", fontSize: 12, color: "var(--color-text-secondary)", textAlign: "center" }}>No agents found.</div>
+              ) : agents.map(agent => (
+                <button key={agent.id} onClick={() => setSelectedAgent(agent)} style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
+                  padding: "8px 10px", borderRadius: "var(--radius-md)", cursor: "pointer", gap: 8,
+                  textAlign: "left", marginBottom: 2,
+                  background: selectedAgent?.id === agent.id ? "var(--color-accent-tint)" : "transparent",
+                  border: selectedAgent?.id === agent.id ? "1px solid #c4b5fd" : "1px solid transparent",
+                }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {agent.display_name || agent.agent_name}
+                    </div>
+                    <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 1 }}>{agent.status} · {agent.published ? "Published" : "Draft"}</div>
+                  </div>
+                  <Dot color={agent.status === "running" ? "green" : agent.status === "stopped" ? "red" : "amber"} />
+                </button>
+              ))}
+            </div>
+          </Panel>
+
+          <div style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--color-bg)", border: "1px solid var(--color-border)", fontSize: 11, color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
+            <strong>Security:</strong> API key is a Vercel Secret accessed only in server-side handlers.
+            The LiveKit JWT forwarded to the browser is short-lived and room-scoped.
+            No credentials are logged or persisted beyond the session.
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <Panel>
+            <PanelHead
+              title="WebRTC Session"
+              sub="LiveKit · mic + speaker · POST /api/trigger-call/ with medium=webrtc"
+              right={phase === "live" ? <Tag color="green">● LIVE {timer}</Tag> : undefined}
+            />
+            <div style={{ padding: 16 }}>
+              {phase === "idle" && !selectedAgent && (
+                <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>
+                  Verify your connection and select an agent to begin.
+                </div>
+              )}
+              {phase === "idle" && selectedAgent && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-accent-tint)", border: "1px solid #c4b5fd" }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-accent)" }}>{selectedAgent.display_name || selectedAgent.agent_name}</div>
+                    <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>ID: {selectedAgent.id}</div>
+                  </div>
+                  <Btn onClick={() => setPhase("confirm")} variant="primary">Start Live Session →</Btn>
+                </div>
+              )}
+              {phase === "confirm" && selectedAgent && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 13, color: "var(--color-text-primary)" }}>
+                    <strong>Before starting:</strong> This initiates a real WebRTC session with <strong>{selectedAgent.display_name}</strong>.
+                    Your microphone will be captured. No outbound phone call is placed. Credit usage may apply.
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <Btn onClick={startSession} variant="primary">Confirm · Start Session</Btn>
+                    <Btn onClick={() => setPhase("idle")} variant="ghost">Cancel</Btn>
+                  </div>
+                </div>
+              )}
+              {(phase === "starting" || phase === "connecting") && (
+                <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>
+                  {phase === "starting" ? "Requesting session token from Vaani…" : "Connecting to LiveKit room…"}
+                </div>
+              )}
+              {phase === "mic_denied" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 13 }}>
+                    <strong>Microphone access denied.</strong> Allow microphone access in your browser settings, then try again.
+                  </div>
+                  <Btn onClick={() => setPhase("idle")} variant="ghost">Try Again</Btn>
+                </div>
+              )}
+              {phase === "error" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-danger-bg)", color: "var(--color-danger)", fontSize: 13 }}>
+                    {sessionError}
+                  </div>
+                  <Btn onClick={() => setPhase("idle")} variant="ghost">Try Again</Btn>
+                </div>
+              )}
+              {phase === "live" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-success-bg)", border: "1px solid #6ee7b7" }}>
+                    <Dot color="green" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-success)" }}>Connected · {session?.agent_name || selectedAgent?.display_name}</div>
+                      <div style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>Speak now — agent is listening</div>
+                    </div>
+                    <span style={{ fontSize: 13, fontFamily: "monospace", color: "var(--color-text-secondary)" }}>{timer}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <Btn onClick={toggleMute} variant={muted ? "outline" : "ghost"}>{muted ? "🎙 Unmute" : "🔇 Mute"}</Btn>
+                    <Btn onClick={endSession} variant="danger">End Session</Btn>
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--color-text-secondary)", padding: "5px 10px", borderRadius: "var(--radius-sm)", background: "var(--color-bg)", border: "1px solid var(--color-border)" }}>
+                    Room: <code style={{ fontFamily: "monospace" }}>{session?.room_name}</code>
+                  </div>
+                </div>
+              )}
+              {phase === "ending" && (
+                <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>Disconnecting…</div>
+              )}
+              {phase === "done" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-bg)", border: "1px solid var(--color-border)", fontSize: 13, color: "var(--color-text-secondary)" }}>
+                    Session ended. Fetching transcript — processing typically takes 30–60 seconds.
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <Btn onClick={() => { setPhase("idle"); setCaptions([]); setSession(null); setTranscript({ status: "idle" }); }} variant="ghost">New Session</Btn>
+                    {session && <Btn onClick={() => fetchTranscript(session.room_name)} variant="outline" size="sm" disabled={transcript.status === "fetching"}>Fetch Transcript Now</Btn>}
+                  </div>
+                </div>
+              )}
+            </div>
+          </Panel>
+
+          {(phase === "live" || phase === "done" || phase === "ending") && captions.length > 0 && (
+            <Panel>
+              <PanelHead title="Live Captions" sub="Real-time from Vaani WebSocket" right={<Tag color="green">LIVE DATA</Tag>} />
+              <div style={{ padding: 12, maxHeight: 240, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
+                {captions.map(cap => (
+                  <div key={cap.id} style={{ display: "flex", gap: 8, opacity: cap.is_final ? 1 : 0.55 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, width: 38, flexShrink: 0, paddingTop: 2, textTransform: "uppercase", color: cap.speaker === "agent" ? "var(--color-accent)" : "var(--color-warning)" }}>{cap.speaker}</span>
+                    <span style={{ fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.5 }}>{cap.text}</span>
+                  </div>
+                ))}
+                <div ref={captionEndRef} />
+              </div>
+            </Panel>
+          )}
+
+          {transcript.status !== "idle" && (
+            <Panel>
+              <PanelHead
+                title="Session Transcript"
+                sub="GET /api/transcript/{room_name} · retrieved after call ends"
+                right={transcript.status === "available" ? <Tag color="blue">LIVE DATA</Tag> : undefined}
+              />
+              <div style={{ padding: 16 }}>
+                {transcript.status === "fetching" && <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>Fetching from Vaani…</div>}
+                {transcript.status === "available" && (
+                  <pre style={{ fontSize: 12, lineHeight: 1.8, color: "var(--color-text-primary)", whiteSpace: "pre-wrap", wordBreak: "break-word", margin: 0, maxHeight: 360, overflowY: "auto" }}>
+                    {transcript.text}
+                  </pre>
+                )}
+                {transcript.status === "unavailable" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>{transcript.reason}</div>
+                    {session && <Btn onClick={() => fetchTranscript(session.room_name)} variant="outline" size="sm">Try Again</Btn>}
+                  </div>
+                )}
+                {transcript.status === "error" && <div style={{ fontSize: 13, color: "var(--color-danger)" }}>{transcript.message}</div>}
+              </div>
+            </Panel>
           )}
         </div>
       </div>
-
-      {!isOwner && <DemoModePanel onLogin={() => router.push("/login")} />}
-
-      {isOwner && (
-        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 16, alignItems: "start" }} className="connect-grid">
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <Panel>
-              <PanelHead title="Vaani Account" sub="Server-side key · never exposed to browser" />
-              <div style={{ padding: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <Dot color={agentVerified ? "green" : verifyError ? "red" : "grey"} />
-                  <span style={{ fontSize: 13, color: "var(--color-text-primary)" }}>
-                    {agentVerified ? `Verified · ${agentCount} agent${agentCount !== 1 ? "s" : ""}` : verifyError || "Not verified"}
-                  </span>
-                </div>
-                <Btn onClick={verifyConnection} variant={agentVerified ? "ghost" : "primary"} disabled={verifying} size="sm">
-                  {verifying ? "Verifying…" : agentVerified ? "Re-verify" : "Verify Connection"}
-                </Btn>
-              </div>
-            </Panel>
-
-            <Panel>
-              <PanelHead title="Agents" sub="GET /api/agents" right={agentVerified && <Btn onClick={loadAgents} variant="ghost" size="sm" disabled={agentsLoading}>{agentsLoading ? "…" : "↻"}</Btn>} />
-              <div style={{ padding: 8 }}>
-                {!agentVerified ? (
-                  <div style={{ padding: "10px 8px", fontSize: 12, color: "var(--color-text-secondary)", textAlign: "center" }}>Verify connection first.</div>
-                ) : agentsLoading ? (
-                  <div style={{ padding: "10px 8px", fontSize: 12, color: "var(--color-text-secondary)", textAlign: "center" }}>Loading…</div>
-                ) : agents.length === 0 ? (
-                  <div style={{ padding: "10px 8px", fontSize: 12, color: "var(--color-text-secondary)", textAlign: "center" }}>No agents found.</div>
-                ) : agents.map(agent => (
-                  <button key={agent.id} onClick={() => setSelectedAgent(agent)} style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
-                    padding: "8px 10px", borderRadius: "var(--radius-md)", cursor: "pointer", gap: 8,
-                    textAlign: "left", marginBottom: 2,
-                    background: selectedAgent?.id === agent.id ? "var(--color-accent-tint)" : "transparent",
-                    border: selectedAgent?.id === agent.id ? "1px solid #c4b5fd" : "1px solid transparent",
-                  }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {agent.display_name || agent.agent_name}
-                      </div>
-                      <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 1 }}>{agent.status} · {agent.published ? "Published" : "Draft"}</div>
-                    </div>
-                    <Dot color={agent.status === "running" ? "green" : agent.status === "stopped" ? "red" : "amber"} />
-                  </button>
-                ))}
-              </div>
-            </Panel>
-
-            <div style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--color-bg)", border: "1px solid var(--color-border)", fontSize: 11, color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
-              <strong>Security:</strong> API key is a Vercel Secret accessed only in server-side handlers.
-              The LiveKit JWT forwarded to the browser is short-lived and room-scoped.
-              No credentials are logged or persisted beyond the session.
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <Panel>
-              <PanelHead
-                title="WebRTC Session"
-                sub="LiveKit · mic + speaker · POST /api/trigger-call/ with medium=webrtc"
-                right={phase === "live" ? <Tag color="green">● LIVE {timer}</Tag> : undefined}
-              />
-              <div style={{ padding: 16 }}>
-                {phase === "idle" && !selectedAgent && (
-                  <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>
-                    Verify your connection and select an agent to begin.
-                  </div>
-                )}
-                {phase === "idle" && selectedAgent && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-accent-tint)", border: "1px solid #c4b5fd" }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-accent)" }}>{selectedAgent.display_name || selectedAgent.agent_name}</div>
-                      <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>ID: {selectedAgent.id}</div>
-                    </div>
-                    <Btn onClick={() => setPhase("confirm")} variant="primary">Start Live Session →</Btn>
-                  </div>
-                )}
-                {phase === "confirm" && selectedAgent && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    <div style={{ padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 13, color: "var(--color-text-primary)" }}>
-                      <strong>Before starting:</strong> This initiates a real WebRTC session with <strong>{selectedAgent.display_name}</strong>.
-                      Your microphone will be captured. No outbound phone call is placed. Credit usage may apply.
-                    </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <Btn onClick={startSession} variant="primary">Confirm · Start Session</Btn>
-                      <Btn onClick={() => setPhase("idle")} variant="ghost">Cancel</Btn>
-                    </div>
-                  </div>
-                )}
-                {(phase === "starting" || phase === "connecting") && (
-                  <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>
-                    {phase === "starting" ? "Requesting session token from Vaani…" : "Connecting to LiveKit room…"}
-                  </div>
-                )}
-                {phase === "mic_denied" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <div style={{ padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 13 }}>
-                      <strong>Microphone access denied.</strong> Allow microphone access in your browser settings, then try again.
-                    </div>
-                    <Btn onClick={() => setPhase("idle")} variant="ghost">Try Again</Btn>
-                  </div>
-                )}
-                {phase === "error" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-danger-bg)", color: "var(--color-danger)", fontSize: 13 }}>
-                      {sessionError}
-                    </div>
-                    <Btn onClick={() => setPhase("idle")} variant="ghost">Try Again</Btn>
-                  </div>
-                )}
-                {phase === "live" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-success-bg)", border: "1px solid #6ee7b7" }}>
-                      <Dot color="green" />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-success)" }}>Connected · {session?.agent_name || selectedAgent?.display_name}</div>
-                        <div style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>Speak now — agent is listening</div>
-                      </div>
-                      <span style={{ fontSize: 13, fontFamily: "monospace", color: "var(--color-text-secondary)" }}>{timer}</span>
-                    </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <Btn onClick={toggleMute} variant={muted ? "outline" : "ghost"}>{muted ? "🎙 Unmute" : "🔇 Mute"}</Btn>
-                      <Btn onClick={endSession} variant="danger">End Session</Btn>
-                    </div>
-                    <div style={{ fontSize: 11, color: "var(--color-text-secondary)", padding: "5px 10px", borderRadius: "var(--radius-sm)", background: "var(--color-bg)", border: "1px solid var(--color-border)" }}>
-                      Room: <code style={{ fontFamily: "monospace" }}>{session?.room_name}</code>
-                    </div>
-                  </div>
-                )}
-                {phase === "ending" && (
-                  <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: "var(--color-text-secondary)" }}>Disconnecting…</div>
-                )}
-                {phase === "done" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-bg)", border: "1px solid var(--color-border)", fontSize: 13, color: "var(--color-text-secondary)" }}>
-                      Session ended. Fetching transcript — processing typically takes 30–60 seconds.
-                    </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <Btn onClick={() => { setPhase("idle"); setCaptions([]); setSession(null); setTranscript({ status: "idle" }); }} variant="ghost">New Session</Btn>
-                      {session && <Btn onClick={() => fetchTranscript(session.room_name)} variant="outline" size="sm" disabled={transcript.status === "fetching"}>Fetch Transcript Now</Btn>}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Panel>
-
-            {(phase === "live" || phase === "done" || phase === "ending") && captions.length > 0 && (
-              <Panel>
-                <PanelHead title="Live Captions" sub="Real-time from Vaani WebSocket" right={<Tag color="green">LIVE DATA</Tag>} />
-                <div style={{ padding: 12, maxHeight: 240, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
-                  {captions.map(cap => (
-                    <div key={cap.id} style={{ display: "flex", gap: 8, opacity: cap.is_final ? 1 : 0.55 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, width: 38, flexShrink: 0, paddingTop: 2, textTransform: "uppercase", color: cap.speaker === "agent" ? "var(--color-accent)" : "var(--color-warning)" }}>{cap.speaker}</span>
-                      <span style={{ fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.5 }}>{cap.text}</span>
-                    </div>
-                  ))}
-                  <div ref={captionEndRef} />
-                </div>
-              </Panel>
-            )}
-
-            {transcript.status !== "idle" && (
-              <Panel>
-                <PanelHead
-                  title="Session Transcript"
-                  sub="GET /api/transcript/{room_name} · retrieved after call ends"
-                  right={transcript.status === "available" ? <Tag color="blue">LIVE DATA</Tag> : undefined}
-                />
-                <div style={{ padding: 16 }}>
-                  {transcript.status === "fetching" && <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>Fetching from Vaani…</div>}
-                  {transcript.status === "available" && (
-                    <pre style={{ fontSize: 12, lineHeight: 1.8, color: "var(--color-text-primary)", whiteSpace: "pre-wrap", wordBreak: "break-word", margin: 0, maxHeight: 360, overflowY: "auto" }}>
-                      {transcript.text}
-                    </pre>
-                  )}
-                  {transcript.status === "unavailable" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>{transcript.reason}</div>
-                      {session && <Btn onClick={() => fetchTranscript(session.room_name)} variant="outline" size="sm">Try Again</Btn>}
-                    </div>
-                  )}
-                  {transcript.status === "error" && <div style={{ fontSize: 13, color: "var(--color-danger)" }}>{transcript.message}</div>}
-                </div>
-              </Panel>
-            )}
-          </div>
-        </div>
-      )}
 
       <style>{`@media (max-width: 860px) { .connect-grid { grid-template-columns: 1fr !important; } }`}</style>
     </AppShell>
