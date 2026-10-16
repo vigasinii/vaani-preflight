@@ -1,36 +1,105 @@
 @import "tailwindcss";
 
+/* ─── Design tokens ─────────────────────────────────────────────────────────── */
 :root {
-  --color-bg: #F8F9FB;
-  --color-sidebar: #F5F6F9;
+  /* App surfaces */
+  --color-bg: #F4F6FA;
   --color-surface: #FFFFFF;
-  --color-text-primary: #171923;
-  --color-text-secondary: #667085;
-  --color-border: #E6E8EE;
-  --color-accent: #7057E8;
-  --color-accent-tint: #F1EEFF;
-  --color-success: #16815D;
-  --color-success-bg: #ECFDF5;
-  --color-warning: #B7791F;
+  --color-surface-raised: #FAFBFE;
+  --color-surface-sunken: #EFF1F6;
+
+  /* Navigation shell — deep midnight */
+  --color-sidebar: #080C14;
+  --color-sidebar-hover: rgba(255,255,255,0.055);
+  --color-sidebar-active: rgba(74,100,255,0.16);
+  --color-sidebar-border: rgba(255,255,255,0.07);
+  --color-sidebar-text: rgba(255,255,255,0.50);
+  --color-sidebar-text-hover: rgba(255,255,255,0.80);
+  --color-sidebar-text-active: rgba(255,255,255,0.96);
+
+  /* Accent — electric periwinkle / cobalt */
+  --color-accent: #4A64FF;
+  --color-accent-hover: #3852EF;
+  --color-accent-tint: #ECF0FF;
+  --color-accent-muted: rgba(74,100,255,0.10);
+  --color-accent-glow: rgba(74,100,255,0.18);
+
+  /* Text */
+  --color-text-primary: #0D1117;
+  --color-text-secondary: #5C6476;
+  --color-text-tertiary: #97A0B4;
+
+  /* Borders */
+  --color-border: #E1E5EF;
+  --color-border-strong: #C7CCDB;
+
+  /* Status — success */
+  --color-success: #0C8A5E;
+  --color-success-bg: #EDFAF5;
+  --color-success-border: #A3E9CC;
+
+  /* Status — warning */
+  --color-warning: #B87318;
   --color-warning-bg: #FFFBEB;
-  --color-danger: #D14343;
+  --color-warning-border: #FDD98A;
+
+  /* Status — danger */
+  --color-danger: #D13B3B;
   --color-danger-bg: #FEF2F2;
-  --radius-sm: 6px;
+  --color-danger-border: #FBBBBB;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(13,17,23,0.04);
+  --shadow-sm: 0 1px 3px rgba(13,17,23,0.06), 0 1px 2px rgba(13,17,23,0.04);
+  --shadow-md: 0 4px 12px rgba(13,17,23,0.07), 0 2px 4px rgba(13,17,23,0.04);
+  --shadow-lg: 0 8px 24px rgba(13,17,23,0.09), 0 4px 8px rgba(13,17,23,0.04);
+  --shadow-xl: 0 16px 48px rgba(13,17,23,0.10), 0 8px 16px rgba(13,17,23,0.05);
+  --shadow-accent: 0 4px 14px rgba(74,100,255,0.30);
+
+  /* Radii */
+  --radius-sm: 5px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
 }
 
-* { box-sizing: border-box; }
+/* ─── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 14px; }
 
 body {
   background: var(--color-bg);
   color: var(--color-text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Typography utilities ──────────────────────────────────────────────────── */
+.label-xs {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.label-sm {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

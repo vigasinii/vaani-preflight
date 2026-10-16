@@ -13,6 +13,7 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "framer-motion": "^14.3.0",
     "livekit-client": "^2.23.0",
     "lucide-react": "^0.511.0",
     "msedge-tts": "^2.1.0",
