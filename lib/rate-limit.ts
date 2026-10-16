@@ -1,4 +1,4 @@
-// Simple in-memory rate limiter — sufficient for a portfolio deployment.
+﻿// Simple in-memory rate limiter - sufficient for a portfolio deployment.
 // Resets on server restart; does not persist across Vercel edge instances.
 
 interface Bucket { count: number; resetAt: number }

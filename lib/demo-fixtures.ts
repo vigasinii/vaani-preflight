@@ -1,7 +1,7 @@
-import type { AgentConfig } from "@/types/agent";
+﻿import type { AgentConfig } from "@/types/agent";
 
 export const DEMO_FIXTURE: AgentConfig = {
-  name: "Riya — Real Estate Lead Qualifier",
+  name: "Riya - Real Estate Lead Qualifier",
   objective: "Qualify inbound real estate leads, capture budget and property preferences, and transfer to a human agent when requested or when budget is outside range.",
   systemPrompt: `You are Riya, a voice assistant for Amaze Developers in Delhi NCR.
 
@@ -53,7 +53,7 @@ export const FIXED_FIXTURE: AgentConfig = {
   ...DEMO_FIXTURE,
   systemPrompt: `You are Riya, a voice assistant for Amaze Developers in Delhi NCR.
 
-Your role is to qualify real estate leads. If at any point the customer explicitly requests to speak with a human agent, immediately offer a transfer or callback — do not continue qualification.
+Your role is to qualify real estate leads. If at any point the customer explicitly requests to speak with a human agent, immediately offer a transfer or callback - do not continue qualification.
 
 Ask in order:
 1. Confirm the caller's name.
@@ -68,7 +68,7 @@ Properties start at ₹80 lakhs. Note budget mismatches.`,
     {
       name: "transfer_call",
       enabled: true,
-      destination: "+910000000000", // illustrative — replace with real number
+      destination: "+910000000000", // illustrative - replace with real number
       instructions: "Use @transfer_call immediately when the customer requests a human agent.",
     },
     {

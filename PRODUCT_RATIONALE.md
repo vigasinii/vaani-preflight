@@ -1,8 +1,8 @@
-# Product Rationale — Vaani Preflight
+﻿# Product Rationale - Vaani Preflight
 
 ## Why this is a high-leverage problem
 
-No-code voice agent builders are often non-technical. They configure an agent's objective, write a system prompt, and enable tools — but the relationship between these three things is not enforced by the platform at build time. An agent can be published in a state where:
+No-code voice agent builders are often non-technical. They configure an agent's objective, write a system prompt, and enable tools - but the relationship between these three things is not enforced by the platform at build time. An agent can be published in a state where:
 
 - The objective says "transfer to a human agent when requested"
 - The system prompt says "use @transfer_call"
@@ -12,7 +12,7 @@ The agent goes live. A customer asks for a human. Nothing works. The builder fin
 
 ## The gap
 
-Most agent builders only discover misconfigurations after a bad call. Vaani Preflight moves the discovery forward to before launch — at the moment the builder is still in the configuration UI, before any customer has been affected.
+Most agent builders only discover misconfigurations after a bad call. Vaani Preflight moves the discovery forward to before launch - at the moment the builder is still in the configuration UI, before any customer has been affected.
 
 ## Why configuration audits have leverage here specifically
 
@@ -22,7 +22,7 @@ Voice agents have asymmetric failure modes. A bad email can be corrected. A bad 
 - An agent that can't gracefully exit the failed state
 - A lost lead with no record of what went wrong
 
-A pre-deployment check catches the class of errors that produce these outcomes — specifically, the mismatch between what an agent is supposed to do and what it is actually equipped to do.
+A pre-deployment check catches the class of errors that produce these outcomes - specifically, the mismatch between what an agent is supposed to do and what it is actually equipped to do.
 
 ## What the audit checks
 
@@ -40,10 +40,10 @@ Five rules, each with a specific failure mode in mind:
 
 If Vaani were to ship a version of this, the metrics that would tell you it's working:
 
-- **% of agents launched with zero critical config issues** — should trend toward 100%
-- **Time to first configuration-ready agent** — an indicator of builder confidence
-- **Support tickets citing "agent couldn't transfer"** — should fall after preflight ships
-- **% of human handoff requests that result in a completed transfer** — platform-level, requires call data
+- **% of agents launched with zero critical config issues** - should trend toward 100%
+- **Time to first configuration-ready agent** - an indicator of builder confidence
+- **Support tickets citing "agent couldn't transfer"** - should fall after preflight ships
+- **% of human handoff requests that result in a completed transfer** - platform-level, requires call data
 
 ## What this is not
 
@@ -53,7 +53,7 @@ This prototype does not:
 - Simulate a live call
 - Make any guarantees about runtime behavior
 
-It is a configuration analysis tool — a linter for voice agent setup — that demonstrates the pattern.
+It is a configuration analysis tool - a linter for voice agent setup - that demonstrates the pattern.
 
 ## Design principle
 

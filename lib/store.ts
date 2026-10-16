@@ -1,4 +1,4 @@
-import type { AgentConfig } from "@/types/agent";
+﻿import type { AgentConfig } from "@/types/agent";
 import { DEMO_FIXTURE } from "./demo-fixtures";
 
 const CONFIG_KEY = "vp_config_v1";
@@ -20,7 +20,7 @@ export function saveConfig(config: AgentConfig): void {
   try {
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
   } catch {
-    // Storage unavailable — no-op
+    // Storage unavailable - no-op
   }
 }
 

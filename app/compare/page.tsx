@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { AppShell } from "@/components/AppShell";
 import { DEMO_FIXTURE, FIXED_FIXTURE } from "@/lib/demo-fixtures";
 import { runPreflight } from "@/lib/preflight/engine";
@@ -90,7 +90,7 @@ export default function ComparePage() {
           </tbody>
         </table>
         <div style={{ padding: "10px 16px", fontSize: 11, color: "var(--color-text-secondary)", borderTop: "1px solid var(--color-border)", background: "var(--color-bg)" }}>
-          All values derived from the validation engine. The FIXED_FIXTURE uses an illustrative destination (+910000000000) — replace with a real number before production use.
+          All values derived from the validation engine. The FIXED_FIXTURE uses an illustrative destination (+910000000000) - replace with a real number before production use.
         </div>
       </div>
     </AppShell>

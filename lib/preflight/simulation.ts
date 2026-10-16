@@ -1,4 +1,4 @@
-import type { AgentConfig, SimulationResult, SimulationStatus } from "@/types/agent";
+﻿import type { AgentConfig, SimulationResult, SimulationStatus } from "@/types/agent";
 
 export function runSimulation(config: AgentConfig): SimulationResult {
   const transfer = config.tools.find((t) => t.name === "transfer_call");
@@ -22,7 +22,7 @@ export function runSimulation(config: AgentConfig): SimulationResult {
     status = "ready_callback";
     message = "No transfer configured, but callback is available.";
     agentResponse =
-      "I'd love to connect you with a real estate specialist. I can schedule a callback for you at a convenient time — would that work?";
+      "I'd love to connect you with a real estate specialist. I can schedule a callback for you at a convenient time - would that work?";
   } else if (transferEnabled) {
     status = "incomplete";
     message = "transfer_call is enabled but destination is not configured. Transfer cannot complete.";
@@ -40,7 +40,7 @@ export function runSimulation(config: AgentConfig): SimulationResult {
     message,
     agentResponse,
     limitations: [
-      "Configuration simulation — not a live Vaani call.",
+      "Configuration simulation - not a live Vaani call.",
       "Actual call success depends on network, carrier, and platform runtime.",
       "This simulation evaluates configuration readiness only.",
     ],

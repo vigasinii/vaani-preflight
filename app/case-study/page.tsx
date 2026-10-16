@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import Image from "next/image";
 import { AppShell } from "@/components/AppShell";
@@ -137,12 +137,12 @@ export default function CaseStudyPage() {
         </div>
       </div>
 
-      {/* Transcript — centrepiece */}
+      {/* Transcript - centrepiece */}
       <div style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 24 }}>
         <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)" }}>Conversation Transcript</div>
-            <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Reconstructed from call summary — approximate timestamps</div>
+            <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Reconstructed from call summary - approximate timestamps</div>
           </div>
           <span style={{ fontSize: 11, color: "var(--color-danger)", background: "var(--color-danger-bg)", padding: "2px 8px", borderRadius: 100, fontWeight: 600 }}>
             Escalation missed
@@ -184,7 +184,7 @@ export default function CaseStudyPage() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }} className="facts-grid">
         <div style={{ background: "var(--color-success-bg)", border: "1px solid #6ee7b7", borderRadius: "var(--radius-lg)", padding: 20 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-success)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>
-            Verified — directly observed
+            Verified - directly observed
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
             {verifiedFacts.map((fact, i) => (

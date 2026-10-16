@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { AppShell } from "@/components/AppShell";
 import { loadConfig } from "@/lib/store";
@@ -84,7 +84,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: "s3",
     title: "Repeated human request",
-    objective: "Customer asks multiple times — agent keeps qualifying instead.",
+    objective: "Customer asks multiple times - agent keeps qualifying instead.",
     utterance: "I said I want to talk to a human! Please!",
     requiredCapability: "Escalation priority that overrides qualification flow",
     prerequisites: ["Escalation priority language", "No loop-back to qualification after escalation"],
@@ -94,7 +94,7 @@ const SCENARIOS: Scenario[] = [
       trace.push(`Strong escalation language: ${escalation}`);
       const ready = hasReadyTransfer(cfg) || !!hasEnabledTool(cfg, "schedule_callback");
       trace.push(`Handoff ready: ${ready}`);
-      if (!ready) return { outcome: "fail", label: "No handoff path — repeated requests will be ignored", trace, correction: "Enable a handoff tool." };
+      if (!ready) return { outcome: "fail", label: "No handoff path - repeated requests will be ignored", trace, correction: "Enable a handoff tool." };
       if (!escalation) return { outcome: "warn", label: "Agent may re-qualify after first escalation", trace, correction: "Add 'do not continue qualification' language to the prompt." };
       return { outcome: "pass", label: "Agent will transfer without re-qualifying", trace };
     },
@@ -102,7 +102,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: "s4",
     title: "Transfer disabled",
-    objective: "transfer_call is disabled — what happens when a human is requested?",
+    objective: "transfer_call is disabled - what happens when a human is requested?",
     utterance: "Can you transfer me to someone?",
     requiredCapability: "transfer_call enabled",
     prerequisites: ["transfer_call.enabled = true"],
@@ -113,7 +113,7 @@ const SCENARIOS: Scenario[] = [
       const callback = hasEnabledTool(cfg, "schedule_callback");
       trace.push(`schedule_callback fallback: ${!!callback}`);
       if (!t?.enabled) {
-        if (callback) return { outcome: "warn", label: "Transfer disabled — callback fallback available", trace, correction: "Enable transfer_call for synchronous handoff." };
+        if (callback) return { outcome: "warn", label: "Transfer disabled - callback fallback available", trace, correction: "Enable transfer_call for synchronous handoff." };
         return { outcome: "fail", label: "Transfer disabled and no fallback", trace, correction: "Enable transfer_call and configure a destination." };
       }
       return { outcome: "pass", label: "Transfer is enabled", trace };
@@ -140,7 +140,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: "s6",
     title: "Invalid destination format",
-    objective: "Destination is set but doesn't match E.164 — what happens at runtime?",
+    objective: "Destination is set but doesn't match E.164 - what happens at runtime?",
     utterance: "Transfer me to your sales team.",
     requiredCapability: "E.164-formatted destination",
     prerequisites: ["transfer_call.destination matches /^\\+[1-9]\\d{7,14}$/"],
@@ -151,7 +151,7 @@ const SCENARIOS: Scenario[] = [
       trace.push(`destination: "${dest}"`);
       const valid = E164.test(dest.trim());
       trace.push(`E.164 match: ${valid}`);
-      if (!t?.enabled) return { outcome: "warn", label: "transfer_call is disabled — destination not tested", trace };
+      if (!t?.enabled) return { outcome: "warn", label: "transfer_call is disabled - destination not tested", trace };
       if (!valid && dest) return { outcome: "fail", label: "Destination format is invalid", trace, correction: "Use E.164 format: +[country][number]." };
       if (!dest) return { outcome: "fail", label: "No destination configured", trace, correction: "Set a phone number." };
       return { outcome: "pass", label: "Destination format is valid E.164", trace };
@@ -161,7 +161,7 @@ const SCENARIOS: Scenario[] = [
     id: "s7",
     title: "Callback without immediate transfer",
     objective: "schedule_callback is available, but no direct transfer is configured.",
-    utterance: "I'd like to speak with someone — can you call me back?",
+    utterance: "I'd like to speak with someone - can you call me back?",
     requiredCapability: "schedule_callback enabled (transfer optional)",
     prerequisites: ["schedule_callback.enabled = true"],
     evaluate(cfg) {
@@ -171,7 +171,7 @@ const SCENARIOS: Scenario[] = [
       trace.push(`schedule_callback enabled: ${cb?.enabled ?? false}`);
       trace.push(`transfer_call ready: ${transfer}`);
       if (!cb?.enabled) return { outcome: "fail", label: "schedule_callback is disabled", trace, correction: "Enable schedule_callback to offer a callback option." };
-      if (!transfer) return { outcome: "warn", label: "Callback available — no synchronous transfer", trace, correction: "Enable transfer_call for immediate handoff when the customer needs it now." };
+      if (!transfer) return { outcome: "warn", label: "Callback available - no synchronous transfer", trace, correction: "Enable transfer_call for immediate handoff when the customer needs it now." };
       return { outcome: "pass", label: "Both callback and transfer are available", trace };
     },
   },
@@ -197,7 +197,7 @@ const SCENARIOS: Scenario[] = [
     id: "s9",
     title: "Unresolved greeting variable",
     objective: "Greeting references {{Company Name}} but variable has no value.",
-    utterance: "(Call connects — agent speaks greeting with literal placeholder)",
+    utterance: "(Call connects - agent speaks greeting with literal placeholder)",
     requiredCapability: "All {{variables}} in greeting resolved at runtime",
     prerequisites: ["All variables referenced in greeting have defined values"],
     evaluate(cfg) {

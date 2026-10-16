@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AppShell } from "@/components/AppShell";
 import type { VaaniAgent } from "@/lib/vaani/types";
@@ -397,7 +397,7 @@ export default function ConnectPage() {
                     <Dot color="green" />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-success)" }}>Connected · {session?.agent_name || selectedAgent?.display_name}</div>
-                      <div style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>Speak now — agent is listening</div>
+                      <div style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>Speak now - agent is listening</div>
                     </div>
                     <span style={{ fontSize: 13, fontFamily: "monospace", color: "var(--color-text-secondary)" }}>{timer}</span>
                   </div>
@@ -416,7 +416,7 @@ export default function ConnectPage() {
               {phase === "done" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-bg)", border: "1px solid var(--color-border)", fontSize: 13, color: "var(--color-text-secondary)" }}>
-                    Session ended. Fetching transcript — processing typically takes 30–60 seconds.
+                    Session ended. Fetching transcript - processing typically takes 30–60 seconds.
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
                     <Btn onClick={() => { setPhase("idle"); setCaptions([]); setSession(null); setTranscript({ status: "idle" }); }} variant="ghost">New Session</Btn>

@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   VaaniAgent,
   VaaniAgentsListResponse,
   WebRTCSessionResponse,
@@ -51,7 +51,7 @@ async function request<T>(
       return { ok: false, status: res.status, message: "Vaani API is temporarily unavailable." };
     }
     if (!res.ok) {
-      // Do not forward raw upstream body — it may contain internal details.
+      // Do not forward raw upstream body - it may contain internal details.
       return { ok: false, status: res.status, message: `Unexpected response from Vaani API (${res.status}).` };
     }
 
@@ -62,7 +62,7 @@ async function request<T>(
     if (err instanceof Error && err.name === "AbortError") {
       return { ok: false, status: 408, message: "Request timed out after 15s." };
     }
-    return { ok: false, status: 0, message: "Network error — could not reach Vaani API." };
+    return { ok: false, status: 0, message: "Network error - could not reach Vaani API." };
   }
 }
 

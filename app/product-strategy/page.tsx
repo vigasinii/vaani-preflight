@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 
@@ -53,6 +53,30 @@ function Tag({ children, color }: { children: React.ReactNode; color: "green" | 
 
 function Divider() {
   return <div style={{ height: 1, background: "var(--color-border)", margin: "40px 0" }} />;
+}
+
+function EvidenceBlock({ step, label, caption, img, alt, highlight, highlightColor }: {
+  step: string; label: string; caption: string; img: string; alt: string;
+  highlight?: boolean; highlightColor?: "amber" | "red";
+}) {
+  const borderColor = highlight
+    ? highlightColor === "red" ? "#fca5a5" : "#fde68a"
+    : "var(--color-border)";
+  const bg = highlight
+    ? highlightColor === "red" ? "var(--color-danger-bg)" : "var(--color-warning-bg)"
+    : "var(--color-surface)";
+  return (
+    <div style={{ border: `1px solid ${borderColor}`, borderRadius: "var(--radius-lg)", overflow: "hidden", background: bg }}>
+      <div style={{ padding: "10px 16px", borderBottom: `1px solid ${borderColor}`, display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", flexShrink: 0 }}>Step {step}</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)" }}>{label}</span>
+        {highlight && <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 100, background: highlightColor === "red" ? "var(--color-danger-bg)" : "var(--color-warning-bg)", color: highlightColor === "red" ? "var(--color-danger)" : "var(--color-warning)", border: `1px solid ${highlightColor === "red" ? "#fca5a5" : "#fde68a"}` }}>KEY FINDING</span>}
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={img} alt={alt} style={{ width: "100%", display: "block", maxHeight: 420, objectFit: "cover", objectPosition: "top" }} />
+      <div style={{ padding: "10px 16px", fontSize: 12, color: "var(--color-text-secondary)", lineHeight: 1.65, borderTop: `1px solid ${borderColor}` }}>{caption}</div>
+    </div>
+  );
 }
 
 // ─── Priority matrix ──────────────────────────────────────────────────────────
@@ -148,14 +172,19 @@ function MetricRow({ label, metric, type }: { label: string; metric: string; typ
 // ─── Roadmap item ─────────────────────────────────────────────────────────────
 
 function RoadmapItem({ title, desc, status }: { title: string; desc: string; status: "implemented" | "planned" | "exploratory" }) {
-  const s = { implemented: "green", planned: "blue", exploratory: "grey" } as const;
+  const cfg = {
+    implemented: { dot: "#16815D", labelColor: "#16815D" },
+    planned:     { dot: "#2563eb", labelColor: "#2563eb" },
+    exploratory: { dot: "#94a3b8", labelColor: "#94a3b8" },
+  }[status];
   return (
-    <div style={{ display: "flex", gap: 10, padding: "10px 0", borderTop: "1px solid var(--color-border)" }}>
-      <Tag color={s[status]}>{status}</Tag>
-      <div>
-        <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)", marginBottom: 2 }}>{title}</div>
-        <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>{desc}</div>
+    <div style={{ padding: "16px 0", borderTop: "1px solid var(--color-border)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: cfg.dot, flexShrink: 0, display: "inline-block" }} />
+        <span style={{ fontSize: 11, fontWeight: 700, color: cfg.labelColor, textTransform: "uppercase", letterSpacing: "0.07em" }}>{status}</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)" }}>{title}</span>
       </div>
+      <div style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.65, paddingLeft: 16 }}>{desc}</div>
     </div>
   );
 }
@@ -188,14 +217,14 @@ export default function ProductStrategyPage() {
           Product Strategy
         </h1>
         <p style={{ fontSize: 14, color: "var(--color-text-secondary)", margin: "0 0 4px", lineHeight: 1.6, maxWidth: 680 }}>
-          Vaani makes building voice agents remarkably accessible. This exploration investigates what comes next in that journey — helping builders launch with confidence.
+          Vaani makes building voice agents remarkably accessible. This exploration investigates what comes next in that journey - helping builders launch with confidence.
         </p>
         <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic" }}>
           All claims are clearly labeled as hypotheses, directional estimates, or observations from a single exploratory session.
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 32, alignItems: "start" }} className="strategy-grid">
+      <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 24, alignItems: "start" }} className="strategy-grid">
 
         {/* Sticky nav */}
         <nav style={{ position: "sticky", top: 24 }}>
@@ -232,13 +261,13 @@ export default function ProductStrategyPage() {
 
             <div style={{ marginTop: 20, fontSize: 14, color: "var(--color-text-primary)", lineHeight: 1.75 }}>
               <p>
-                Low-code and no-code platforms have fundamentally changed who can build software. Vaani extends this to voice AI — a solo founder can design, configure, and publish a voice agent without writing a single line of code.
+                Low-code and no-code platforms have fundamentally changed who can build software. Vaani extends this to voice AI - a solo founder can design, configure, and publish a voice agent without writing a single line of code.
               </p>
               <p>
                 This accessibility shift creates a natural next challenge: builders who can create agents quickly may lack the tools, experience, or dedicated QA support to evaluate whether an agent is ready for real customer conversations. The gap between <em>built</em> and <em>confidently deployed</em> is worth investigating.
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Hypothesis:</strong> An optional readiness layer — one that surfaces configuration gaps, offers guided recommendations, and enables controlled testing — could improve first-deployment confidence without adding friction to the core creation flow. This prototype explores what that experience might look like.
+                <strong>Hypothesis:</strong> An optional readiness layer - one that surfaces configuration gaps, offers guided recommendations, and enables controlled testing - could improve first-deployment confidence without adding friction to the core creation flow. This prototype explores what that experience might look like.
               </p>
             </div>
           </Section>
@@ -254,13 +283,13 @@ export default function ProductStrategyPage() {
                 <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Profile</div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 4 }}>Solo Founder / Small-Business Operator</div>
                 <div style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
-                  Creating a first voice agent for a specific business function — lead qualification, appointment booking, customer support intake — without a dedicated QA or engineering team.
+                  Creating a first voice agent for a specific business function - lead qualification, appointment booking, customer support intake - without a dedicated QA or engineering team.
                 </div>
               </Card>
               <Card>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Job to Be Done</div>
                 <div style={{ fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.6 }}>
-                  "Help me know my agent is ready before a real customer talks to it — without needing to set up a full QA process."
+                  "Help me know my agent is ready before a real customer talks to it - without needing to set up a full QA process."
                 </div>
               </Card>
             </Grid>
@@ -304,10 +333,10 @@ export default function ProductStrategyPage() {
           <Section id="journey">
             <SectionHead label="C · User Journey" title="Where Preflight fits" sub="The full builder journey, with opportunities for a readiness experience." />
             <Card>
-              <JourneyStep step="Create" title="Build an agent on Vaani" desc="The builder designs the agent's objective, configures its voice, and writes the system prompt. Vaani makes this fast and accessible — often completed in a single session." />
-              <JourneyStep step="Configure" title="Set tools, variables, and rules" desc="Transfer destinations, callback options, and dynamic variables are added. This is where most configuration errors are introduced — silently." preflightNote="Deterministic checks surface issues at configuration time, before any call is attempted." />
+              <JourneyStep step="Create" title="Build an agent on Vaani" desc="The builder designs the agent's objective, configures its voice, and writes the system prompt. Vaani makes this fast and accessible - often completed in a single session." />
+              <JourneyStep step="Configure" title="Set tools, variables, and rules" desc="Transfer destinations, callback options, and dynamic variables are added. This is where most configuration errors are introduced - silently." preflightNote="Deterministic checks surface issues at configuration time, before any call is attempted." />
               <JourneyStep step="Test" title="Evaluate readiness" desc="Without a structured tool, the builder might call their own agent number or share it with a friend. Coverage is limited and findings are informal." preflightNote="Scenario Lab runs deterministic conversation simulations. Connect enables a real WebRTC session against the live agent." />
-              <JourneyStep step="Launch" title="Expose to real customers" desc="The agent goes live. Issues that weren't caught in testing appear in real conversations — often identified through customer complaints or missed leads." preflightNote="The readiness score and blocking issue list provide a structured launch gate the builder can apply on their own terms." />
+              <JourneyStep step="Launch" title="Expose to real customers" desc="The agent goes live. Issues that weren't caught in testing appear in real conversations - often identified through customer complaints or missed leads." preflightNote="The readiness score and blocking issue list provide a structured launch gate the builder can apply on their own terms." />
               <JourneyStep step="Learn" title="Improve based on outcomes" desc="Call data, transcripts, and customer feedback inform the next iteration. Without tooling, this loop is slow and reactive." preflightNote="Transcript retrieval and before/after comparison surface evidence for improvement decisions." />
             </Card>
           </Section>
@@ -316,26 +345,105 @@ export default function ProductStrategyPage() {
 
           {/* D. Evidence */}
           <Section id="evidence">
-            <SectionHead label="D · Discovery Evidence" title="One exploratory session" />
-            <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 12, color: "var(--color-text-primary)", marginBottom: 16, lineHeight: 1.6 }}>
-              <strong>Important:</strong> The following describes a single exploratory test session with one agent configuration. It is not representative of platform behavior broadly, and no causal claims are made about Vaani's architecture or defaults.
+            <SectionHead label="D · Discovery Evidence" title="One exploratory session" sub="Screenshots from a real Vaani platform session. Single data point - not representative of platform behavior broadly." />
+            <div style={{ padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 12, color: "var(--color-text-primary)", marginBottom: 20, lineHeight: 1.6 }}>
+              <strong>Context:</strong> A real-estate lead qualification agent was built and tested on the Vaani platform. The session surfaced two observable gaps that informed the Preflight hypothesis. No causal claims are made about Vaani's defaults.
             </div>
 
-            <Card>
-              <div style={{ fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.75 }}>
-                <p style={{ margin: "0 0 12px" }}>
-                  A real-estate lead qualification agent was tested in a simulated buyer conversation. The session surfaced several observable patterns worth noting as potential configuration considerations:
-                </p>
-                <ul style={{ paddingLeft: 18, margin: "0 0 12px" }}>
-                  <li style={{ marginBottom: 6 }}>The agent was configured with an advertised property starting at ₹80 lakh. When the test customer stated a budget of ₹65 lakh — below the starting price — the conversation continued without a clear resolution of this mismatch.</li>
-                  <li style={{ marginBottom: 6 }}>The test customer explicitly requested to speak with a human agent. The conversation continued beyond this request without a documented transfer or callback outcome.</li>
-                  <li style={{ marginBottom: 0 }}>The session ended before either of these situations reached a clear conclusion in the transcript.</li>
-                </ul>
-                <p style={{ margin: 0, fontStyle: "italic", color: "var(--color-text-secondary)" }}>
-                  These observations informed the hypothesis that configuration checks for handoff readiness and business-rule handling could be valuable to first-time builders. They do not represent platform-wide behavior or verified failure modes.
-                </p>
-              </div>
-            </Card>
+            {/* Step-by-step evidence gallery */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+
+              {/* Step 1: Onboarding */}
+              <EvidenceBlock
+                step="1"
+                label="Platform onboarding"
+                caption="Vaani's guided setup promises agent creation in 90 seconds. The speed is a strength - but it means configuration gaps are easy to miss before going live."
+                img="/evidence/01-onboarding.png"
+                alt="Vaani platform onboarding screen: Let's Build Your AI Voice Agent in 90 Seconds"
+              />
+
+              {/* Step 2: Template selection */}
+              <EvidenceBlock
+                step="2"
+                label="Template selection"
+                caption="The Real Estate – Lead Qualification template was selected. Templates pre-fill the persona and system prompt but leave tool configuration and business-rule variables to the builder."
+                img="/evidence/02-agent-templates.png"
+                alt="Vaani suggested agent templates: E-com, Real Estate, Fintech"
+              />
+
+              {/* Step 3: Persona setup */}
+              <EvidenceBlock
+                step="3"
+                label="Persona configuration"
+                caption="Agent name 'Lead Qualification', voice 'Palak' (cartesia sonic-3.5). The greeting uses {{Company Name}} and {{name}} template variables - unresolved variables at call time would break the opening line."
+                img="/evidence/03-persona.png"
+                alt="Vaani persona setup screen showing agent name, voice, and greeting message with template variables"
+              />
+
+              {/* Step 4: Variables */}
+              <EvidenceBlock
+                step="4"
+                label="Variable values set"
+                caption="Variables assigned: Company Name = Amaze Developers, City/Region = Delhi NCR, starting_price = 80 Lakhs. This is the business rule the agent will use when discussing property pricing with leads."
+                img="/evidence/04-variables.png"
+                alt="Vaani Set Variables panel: Company Name=Amaze Developers, City/Region=Delhi NCR, starting_price=80 Lakhs"
+                highlight
+              />
+
+              {/* Step 5: Live test */}
+              <EvidenceBlock
+                step="5"
+                label="Live test session initiated"
+                caption="The agent was tested live (00:16 elapsed). In the test conversation, the simulated buyer stated a budget of ₹65 lakhs - below the ₹80 lakh starting price."
+                img="/evidence/05-live-test.png"
+                alt="Vaani live session running for 00:16 seconds"
+              />
+
+              {/* Step 6: Call summary - the finding */}
+              <EvidenceBlock
+                step="6"
+                label="Call summary - the finding"
+                caption="Vaani's own call summary confirms: the customer had a budget of 65 lakhs, requested to speak with a real estate agent, and the call ended without a clear resolution or next steps. Two gaps in one session."
+                img="/evidence/06-call-summary.png"
+                alt="Vaani call summary: customer budget 65 lakhs, requested human agent, call ended without resolution"
+                highlight
+                highlightColor="amber"
+              />
+
+              {/* Step 7: Root cause - tools disabled */}
+              <EvidenceBlock
+                step="7"
+                label="Root cause: all handoff tools disabled"
+                caption="In the Agent Builder, hold_call, transfer_call, schedule_callback, and agent_transfer are all toggled off. The agent had no mechanism to act on the escalation request - because the tools were never enabled."
+                img="/evidence/07-disabled-tools.png"
+                alt="Vaani system tools panel: hold_call, transfer_call, schedule_callback, agent_transfer all disabled"
+                highlight
+                highlightColor="red"
+              />
+
+              {/* Step 8: Transfer config - no phone number */}
+              <EvidenceBlock
+                step="8"
+                label="transfer_call - unconfigured"
+                caption="Opening the transfer_call tool reveals an empty Phone Number field and no prompt. Even if the tool were enabled, it would have no destination to transfer to. This is the specific gap Preflight's handoff check detects."
+                img="/evidence/08-transfer-config.png"
+                alt="Vaani transfer_call configuration with empty phone number and no prompt"
+              />
+
+              {/* Step 9: Advanced transfer settings */}
+              <EvidenceBlock
+                step="9"
+                label="Advanced transfer settings - all defaults"
+                caption="Play Dial Tone, Interrupt Permission, Speak Summary To Agent - all disabled. A builder who doesn't know these exist would have no way to discover they're relevant until a real customer request goes unhandled."
+                img="/evidence/09-advanced-transfer.png"
+                alt="Vaani transfer_call advanced settings: all options disabled"
+              />
+
+            </div>
+
+            <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: "var(--radius-md)", background: "var(--color-accent-tint)", border: "1px solid #c4b5fd", fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.65 }}>
+              <strong style={{ color: "var(--color-accent)" }}>What this session surfaced:</strong> A first-time builder, following Vaani's standard setup flow, can publish a live agent that has no functional path for escalation - because the relevant tools are off by default and the configuration screen doesn't surface the gap until you look for it. Preflight is designed to catch exactly this before the first real call.
+            </div>
           </Section>
 
           <Divider />
@@ -345,7 +453,7 @@ export default function ProductStrategyPage() {
             <SectionHead label="E · Opportunity Hypothesis" title="The specific bet" />
             <Card accent>
               <div style={{ fontSize: 15, fontWeight: 500, color: "var(--color-accent)", lineHeight: 1.65, margin: "0 0 12px" }}>
-                "An optional readiness experience — surfacing actionable configuration risks before a first deployment — could help first-time builders identify and resolve the issues most likely to affect early customer conversations."
+                "An optional readiness experience - surfacing actionable configuration risks before a first deployment - could help first-time builders identify and resolve the issues most likely to affect early customer conversations."
               </div>
               <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
                 This is a hypothesis, not a proven outcome. Validation requires measuring actual deployment rates and customer experience signals.
@@ -373,7 +481,7 @@ export default function ProductStrategyPage() {
 
             <div style={{ marginTop: 20, fontSize: 14, color: "var(--color-text-primary)", lineHeight: 1.75 }}>
               <p style={{ margin: "0 0 10px" }}>
-                The MVP focuses on the three highest-impact, lowest-effort opportunities. All three share a key property: they are <strong>deterministic to check</strong> — no inference, no LLM evaluation, no external call needed. A rule either passes or it does not.
+                The MVP focuses on the three highest-impact, lowest-effort opportunities. All three share a key property: they are <strong>deterministic to check</strong> - no inference, no LLM evaluation, no external call needed. A rule either passes or it does not.
               </p>
               <p style={{ margin: 0 }}>
                 This keeps the experience fast, reliable, and explainable. A builder who sees a failing check can understand exactly why and act on it immediately.
@@ -390,11 +498,11 @@ export default function ProductStrategyPage() {
             {[
               {
                 title: "Mandatory deployment blockers",
-                why: "A readiness tool that forces resolution before launch creates friction and positions Preflight as a gatekeeper. The right role for this tool — especially at this stage — is advisory, not mandatory. Builders decide when they're ready.",
+                why: "A readiness tool that forces resolution before launch creates friction and positions Preflight as a gatekeeper. The right role for this tool - especially at this stage - is advisory, not mandatory. Builders decide when they're ready.",
               },
               {
                 title: "Large autonomous conversation evaluation suites",
-                why: "LLM-in-the-loop evaluation is high-cost, non-deterministic, and difficult to explain to a non-technical user. The reliability bar for an advisory tool needs to be very high — 'your agent failed scenario 12' without a clear, verifiable reason undermines trust.",
+                why: "LLM-in-the-loop evaluation is high-cost, non-deterministic, and difficult to explain to a non-technical user. The reliability bar for an advisory tool needs to be very high - 'your agent failed scenario 12' without a clear, verifiable reason undermines trust.",
               },
               {
                 title: "Complex analytics dashboards",
@@ -498,7 +606,7 @@ export default function ProductStrategyPage() {
               <Card>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-warning)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Guardrails</div>
                 <div style={{ fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.6 }}>
-                  Stop the experiment early if: setup abandonment increases by more than 10% in the treatment group, or if median time-to-deploy in the treatment group exceeds 2× the control group's median. Neither outcome has been measured — these are proposed thresholds.
+                  Stop the experiment early if: setup abandonment increases by more than 10% in the treatment group, or if median time-to-deploy in the treatment group exceeds 2× the control group's median. Neither outcome has been measured - these are proposed thresholds.
                 </div>
               </Card>
             </div>
@@ -516,21 +624,21 @@ export default function ProductStrategyPage() {
               <RoadmapItem status="implemented" title="Guided one-click recommendations" desc="Fix Studio applies configuration changes locally with undo support and immediate re-validation." />
               <RoadmapItem status="implemented" title="Clear local-vs-live state labeling" desc="Every change is explicitly marked as affecting local configuration. No change is presented as saved to the real Vaani agent without confirmation." />
               <RoadmapItem status="implemented" title="Deterministic scenario evaluation" desc="Nine conversation scenarios run against the current configuration and return pass/warn/fail with an auditable trace." />
-              <RoadmapItem status="implemented" title="Live WebRTC session (owner only)" desc="Authenticated owner can initiate a real session with their Vaani agent, with microphone capture, agent audio, live captions, and transcript retrieval." />
+              <RoadmapItem status="implemented" title="Live WebRTC session" desc="Any visitor can initiate a real session with a Vaani agent directly in the browser - microphone capture, agent audio, live captions, and transcript retrieval via LiveKit." />
             </div>
 
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 10 }}>Next · Highest-confidence follow-on</div>
-              <RoadmapItem status="planned" title="Real-session transcript evaluation" desc="After a live session, surface specific utterances that match known risk patterns — budget mismatches, unresolved escalation requests — directly from the transcript." />
+              <RoadmapItem status="planned" title="Real-session transcript evaluation" desc="After a live session, surface specific utterances that match known risk patterns - budget mismatches, unresolved escalation requests - directly from the transcript." />
               <RoadmapItem status="planned" title="Evidence-backed scenario retesting" desc="After a configuration change, flag which scenarios were previously failing and require a retest rather than showing 'Resolved' prematurely." />
               <RoadmapItem status="planned" title="Vaani configuration write-back" desc="Apply selected fixes directly to the configured agent via Vaani API, with explicit confirmation and clear labeling of what changed." />
             </div>
 
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 10 }}>Later · Exploratory directions</div>
-              <RoadmapItem status="exploratory" title="Industry-specific readiness templates" desc="Pre-built rule sets for common use cases — real estate, healthcare intake, e-commerce support — reducing setup time for the most common agent types." />
+              <RoadmapItem status="exploratory" title="Industry-specific readiness templates" desc="Pre-built rule sets for common use cases - real estate, healthcare intake, e-commerce support - reducing setup time for the most common agent types." />
               <RoadmapItem status="exploratory" title="Aggregate insights from consenting users" desc="Anonymized signals across readiness reviews could surface which configuration gaps are most common, informing both the tool and Vaani's product direction." />
-              <RoadmapItem status="exploratory" title="Collaborative review flows" desc="Allow a team member or advisor to review and comment on readiness findings before deployment — relevant for slightly larger organizations." />
+              <RoadmapItem status="exploratory" title="Collaborative review flows" desc="Allow a team member or advisor to review and comment on readiness findings before deployment - relevant for slightly larger organizations." />
             </div>
           </Section>
 

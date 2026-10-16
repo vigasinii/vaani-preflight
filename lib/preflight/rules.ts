@@ -1,4 +1,4 @@
-import type { AgentConfig, Severity } from "@/types/agent";
+﻿import type { AgentConfig, Severity } from "@/types/agent";
 
 export interface RuleResult {
   ruleId: string;
@@ -84,7 +84,7 @@ export function runRules(config: AgentConfig): RuleResult[] {
     }
   }
 
-  // Rule 2: transfer destination — always emitted for stable denominator
+  // Rule 2: transfer destination - always emitted for stable denominator
   {
     const transfer = getTool(config, "transfer_call");
     if (transfer?.enabled) {
@@ -113,7 +113,7 @@ export function runRules(config: AgentConfig): RuleResult[] {
       results.push({
         ruleId: "TRANSFER_DESTINATION",
         severity: "passed",
-        title: "Transfer not configured — not required by current tools",
+        title: "Transfer not configured - not required by current tools",
         evidence: "transfer_call is not enabled; destination check does not apply.",
         whyItMatters: "A transfer without a valid destination will fail at runtime, leaving the caller without a resolution path.",
         recommendedAction: "No action required unless you enable transfer_call.",

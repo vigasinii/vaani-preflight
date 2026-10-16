@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
@@ -115,7 +115,7 @@ export default function MissionControlPage() {
             ) : (
               <>
                 <div style={{ width: 130, height: 130, borderRadius: "50%", border: "10px solid var(--color-border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>—</span>
+                  <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>-</span>
                 </div>
                 <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>Not yet run</div>
               </>
@@ -158,7 +158,7 @@ export default function MissionControlPage() {
                   )}
                   {critical.length === 0 && warnings.length === 0 && (
                     <div style={{ color: "var(--color-success)", fontSize: 13, fontWeight: 500 }}>
-                      ✓ No blockers — agent is ready for launch
+                      ✓ No blockers - agent is ready for launch
                     </div>
                   )}
                 </div>

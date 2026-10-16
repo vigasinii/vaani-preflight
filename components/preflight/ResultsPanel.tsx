@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import type { PreflightResult, SimulationResult, Finding } from "@/types/agent";
 import { RefObject } from "react";
@@ -202,7 +202,7 @@ export function ResultsPanel({ preflight, prevPreflight, simulation, onRunSimula
         <div style={{ padding: "10px 16px", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)" }}>Handoff Simulation</div>
-            <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Deterministic simulation — no live Vaani call executed</div>
+            <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Deterministic simulation - no live Vaani call executed</div>
           </div>
           <button onClick={onRunSimulation} style={{
             fontSize: 12, padding: "5px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer",

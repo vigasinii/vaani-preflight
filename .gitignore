@@ -6,3 +6,19 @@ dist/
 *.log
 
 .vercel
+
+# Demo production assets (large binaries, not needed in repo)
+demo/temp/
+demo/temp2/
+demo/temp3/
+demo/frames/
+demo/fullvid-raw/
+demo/preview-video/
+demo/preview-video2/
+demo/preview-video3/
+demo/sil-raw/
+demo/video/
+demo/*.mp4
+demo/*.webm
+demo/*.wav
+demo/_*

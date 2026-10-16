@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Tests for auth logic and rate limiting — verifiable without a running server.
+// Tests for auth logic and rate limiting - verifiable without a running server.
 
 describe("isAuthenticated", () => {
   beforeEach(() => {
@@ -67,7 +67,7 @@ describe("rateLimit", () => {
   });
 });
 
-describe("Scoring — no secrets in output", () => {
+describe("Scoring - no secrets in output", () => {
   it("score computation contains no API key or credentials", async () => {
     const { runRules } = await import("@/lib/preflight/rules");
     const { computeScore } = await import("@/lib/preflight/scoring");
@@ -103,8 +103,8 @@ describe("call_id validation regex", () => {
   });
 });
 
-describe("Demo fixture — evidence labeling", () => {
-  it("DEMO_FIXTURE score is below 70 — correctly shows 'problem state'", async () => {
+describe("Demo fixture - evidence labeling", () => {
+  it("DEMO_FIXTURE score is below 70 - correctly shows 'problem state'", async () => {
     const { DEMO_FIXTURE } = await import("@/lib/demo-fixtures");
     const { runRules } = await import("@/lib/preflight/rules");
     const { computeScore } = await import("@/lib/preflight/scoring");

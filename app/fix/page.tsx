@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { AppShell } from "@/components/AppShell";
 import { loadConfig, saveConfig } from "@/lib/store";
@@ -52,7 +52,7 @@ function buildFix(finding: Finding): FixAction | null {
           apply: (cfg) => ({
             ...cfg,
             systemPrompt: cfg.systemPrompt +
-              "\n\nIf at any point the customer requests to speak with a human agent, immediately offer a transfer or callback — do not continue qualification.",
+              "\n\nIf at any point the customer requests to speak with a human agent, immediately offer a transfer or callback - do not continue qualification.",
           }),
         };
       }
