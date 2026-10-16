@@ -5,12 +5,12 @@ import Link from "next/link";
 
 const NAV = [
   { label: "Mission Control", href: "/", icon: "grid" },
-  { label: "Agent Workspace", href: "/preflight", icon: "check-circle" },
+  { label: "Connect", href: "/connect", icon: "zap" },
+  { label: "Inspect", href: "/preflight", icon: "check-circle" },
   { label: "Fix Studio", href: "/fix", icon: "tool" },
   { label: "Scenario Lab", href: "/scenario", icon: "flask" },
   { label: "Before / After", href: "/compare", icon: "git-compare" },
-  { label: "Investigation", href: "/case-study", icon: "file-text" },
-  { label: "Connect", href: "/connect", icon: "zap" },
+  { label: "Product Strategy", href: "/product-strategy", icon: "lightbulb" },
 ];
 
 function Icon({ name, size = 16 }: { name: string; size?: number }) {
@@ -25,6 +25,7 @@ function Icon({ name, size = 16 }: { name: string; size?: number }) {
     "menu": "M3 12h18M3 6h18M3 18h18",
     "x": "M18 6L6 18M6 6l12 12",
     "shield": "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+    "lightbulb": "M9 21h6m-6 0H7a2 2 0 01-2-2v-1m4 3v-3m6 3v-3m2 0H7m10 0a7 7 0 10-10 0v1h10v-1z",
   };
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">

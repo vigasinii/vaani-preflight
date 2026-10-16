@@ -9,12 +9,6 @@ import type {
 const BASE_URL = "https://api.vaanivoice.ai";
 const TIMEOUT_MS = 15000;
 
-class VaaniClientError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-    this.name = "VaaniClientError";
-  }
-}
 
 async function request<T>(
   path: string,
@@ -57,8 +51,8 @@ async function request<T>(
       return { ok: false, status: res.status, message: "Vaani API is temporarily unavailable." };
     }
     if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      return { ok: false, status: res.status, message: body || `HTTP ${res.status}` };
+      // Do not forward raw upstream body — it may contain internal details.
+      return { ok: false, status: res.status, message: `Unexpected response from Vaani API (${res.status}).` };
     }
 
     const data = await res.json() as T;
