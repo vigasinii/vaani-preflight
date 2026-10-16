@@ -24,7 +24,7 @@ So I built something.
 
 Each finding comes with evidence, why it matters, and what to fix.
 
-The broken config scores 22/100. The fixed config scores 78/100. You can watch the delta in real time.
+The broken config scores 56/100. The fixed config scores 100/100. You can watch the delta in real time — the Before/After page shows +44 points with a check-by-check breakdown.
 
 ---
 
@@ -33,7 +33,7 @@ This is an independent product concept I built as part of my application to Vaan
 It doesn't connect to the Vaani platform. It doesn't simulate a live call. It's a configuration linter — a pre-flight check for the class of silent failures that only show up when a real customer is on the line.
 
 GitHub: https://github.com/vigasinii/vaani-preflight
-Live demo: [ADD DEMO LINK — deploy to Vercel for free]
+Live demo: https://vaani-preflight.vercel.app
 
 ---
 
