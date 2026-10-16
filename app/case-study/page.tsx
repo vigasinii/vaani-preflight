@@ -1,4 +1,7 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
+import { AppShell } from "@/components/AppShell";
 
 const evidenceSteps = [
   {
@@ -69,7 +72,7 @@ const evidenceSteps = [
 const transcript = [
   { time: "~00:56", speaker: "Customer", text: "My budget is 65 lakhs. Do you have anything?" },
   { time: "~01:04", speaker: "Agent", text: "Just to clarify, have you already finalized a property, or are you still actively looking?" },
-  { time: "~01:26", speaker: "Customer", text: "Can I speak to a real estate agent" },
+  { time: "~01:26", speaker: "Customer", text: "Can I speak to a real estate agent", critical: true },
   { time: "~01:30", speaker: "Agent", text: "Like... a two B H K apartment, a villa, or maybe a commercial space?" },
 ];
 
@@ -89,185 +92,193 @@ const hypotheses = [
   "We did NOT prove WebRTC supports live transfers in this context",
 ];
 
-export default function CaseStudyPage() {
+function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div>
-            <div className="font-semibold text-slate-900 text-sm leading-tight">Evidence-led Case Study</div>
-            <div className="text-xs text-slate-500">Independent product concept</div>
-          </div>
-          <a
-            href="/"
-            className="text-xs text-slate-500 hover:text-slate-700 border border-slate-200 rounded-lg px-3 py-1.5 transition-colors"
-          >
-            ← Preflight Checker
-          </a>
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-10">
-        {/* Hero */}
-        <div className="rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-pink-50 p-6">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Vaani Agent Handoff Failure</h1>
-          <p className="text-sm text-slate-600">
-            This case study documents a real session with a Vaani-built real estate lead qualification agent.
-            The agent failed to connect a customer who explicitly requested a human representative.
-            All evidence below is based on direct observation during product research.
-          </p>
-        </div>
-
-        {/* Evidence Timeline */}
-        <section>
-          <h2 className="text-lg font-semibold text-slate-900 mb-5">Evidence Timeline</h2>
-          <div className="space-y-6">
-            {evidenceSteps.map((step) => (
-              <div key={step.step} className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex items-center gap-3">
-                  <span className="w-7 h-7 rounded-full bg-violet-100 text-violet-700 text-xs font-bold flex items-center justify-center shrink-0">
-                    {step.step}
-                  </span>
-                  <div>
-                    <div className="text-sm font-semibold text-slate-800">{step.title}</div>
-                    <div className="text-xs text-slate-500">{step.description}</div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="relative w-full rounded-lg overflow-hidden border border-slate-100 bg-slate-50" style={{ minHeight: 200 }}>
-                    <Image
-                      src={step.image}
-                      alt={step.alt}
-                      width={900}
-                      height={500}
-                      className="w-full h-auto object-contain"
-                      style={{ maxHeight: 420 }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Conversation Transcript */}
-        <section>
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Conversation Transcript</h2>
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-slate-500 w-20">Time</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-slate-500 w-24">Speaker</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-slate-500">Utterance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {transcript.map((row, i) => (
-                  <tr key={i} className={row.speaker === "Customer" ? "bg-amber-50/40" : ""}>
-                    <td className="px-4 py-2.5 text-xs text-slate-400 font-mono">{row.time}</td>
-                    <td className="px-4 py-2.5">
-                      <span
-                        className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                          row.speaker === "Customer"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {row.speaker}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5 text-sm text-slate-700 italic">&quot;{row.text}&quot;</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Verified vs Hypothesized */}
-        <section>
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Verified vs Hypothesized</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-              <h3 className="text-sm font-semibold text-emerald-800 mb-3">Verified — directly observed</h3>
-              <ul className="space-y-2">
-                {verifiedFacts.map((fact, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-emerald-800">
-                    <span className="shrink-0 mt-0.5">✓</span>
-                    <span>{fact}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
-              <h3 className="text-sm font-semibold text-amber-800 mb-1">Hypotheses</h3>
-              <p className="text-xs text-amber-700 mb-3 italic">Requires further testing</p>
-              <ul className="space-y-2">
-                {hypotheses.map((h, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-amber-800">
-                    <span className="shrink-0 mt-0.5">~</span>
-                    <span>{h}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* Proposed Solution */}
-        <section>
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Proposed Solution</h2>
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-5 space-y-3">
-            <p className="text-sm text-slate-600">
-              A pre-deployment preflight check would validate agent configuration before live launch,
-              surfacing issues like missing transfer destinations and unconfigured handoff tools before
-              they affect real customers.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                "Validate all enabled tools are fully configured",
-                "Detect prompt/tool mismatches before launch",
-                "Flag missing escalation priority language",
-                "Simulate human handoff request with current config",
-              ].map((item, i) => (
-                <div key={i} className="text-xs text-slate-600 bg-violet-50 border border-violet-100 rounded-lg px-3 py-2">
-                  → {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Success Metrics */}
-        <section>
-          <h2 className="text-lg font-semibold text-slate-900 mb-2">Proposed Success Metrics</h2>
-          <p className="text-xs text-slate-500 mb-4 italic">These are proposed metrics, not measured improvements.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              "% of agents launched with unresolved critical config issues",
-              "Time to first configuration-ready agent",
-              "% of explicit human requests receiving an appropriate response",
-              "Support tickets related to incomplete tool configuration",
-            ].map((m, i) => (
-              <div key={i} className="text-xs text-slate-500 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2">
-                &#128202; {m}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Disclaimer */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-xs text-slate-500">
-          Screenshots are copies of original session captures. The session identifier visible in screenshot 06 was masked for sharing.
-          This prototype is independent and has no authenticated integration with Vaani.
-        </div>
-
-        <footer className="text-center text-xs text-slate-400 pb-4">
-          Independent product concept for Vaani AI Research &middot; Built by Vigasini
-        </footer>
-      </main>
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}
+      onClick={onClose}
+    >
+      <div style={{ position: "relative", maxWidth: "90vw", maxHeight: "90vh" }} onClick={e => e.stopPropagation()}>
+        <Image src={src} alt={alt} width={1200} height={800} style={{ maxWidth: "90vw", maxHeight: "85vh", objectFit: "contain", borderRadius: "var(--radius-md)" }} />
+        <button
+          onClick={onClose}
+          style={{ position: "absolute", top: -12, right: -12, width: 28, height: 28, borderRadius: "50%", background: "var(--color-surface)", border: "none", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
     </div>
+  );
+}
+
+export default function CaseStudyPage() {
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+
+  return (
+    <AppShell breadcrumb="Case Study">
+      {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
+
+      {/* Hero */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
+          Product Investigation · October 2026
+        </div>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.25, margin: "0 0 12px", maxWidth: 640 }}>
+          The agent was ready to talk. Was it ready to help?
+        </h1>
+        <p style={{ fontSize: 15, color: "var(--color-text-secondary)", lineHeight: 1.6, maxWidth: 600, margin: 0 }}>
+          A real session with a Vaani-built real estate lead qualification agent.
+          The agent failed to connect a customer who explicitly requested a human representative.
+          All evidence below is based on direct observation during product research.
+        </p>
+        <div style={{ marginTop: 16, padding: "10px 14px", borderRadius: "var(--radius-md)", background: "var(--color-warning-bg)", border: "1px solid #fde68a", fontSize: 12, color: "var(--color-warning)", maxWidth: 520 }}>
+          <strong>Key moment:</strong> At ~01:26, the customer said "Can I speak to a real estate agent." The agent responded with a property type question.
+        </div>
+      </div>
+
+      {/* Transcript — centrepiece */}
+      <div style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 24 }}>
+        <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)" }}>Conversation Transcript</div>
+            <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Reconstructed from call summary — approximate timestamps</div>
+          </div>
+          <span style={{ fontSize: 11, color: "var(--color-danger)", background: "var(--color-danger-bg)", padding: "2px 8px", borderRadius: 100, fontWeight: 600 }}>
+            Escalation missed
+          </span>
+        </div>
+        <div>
+          {transcript.map((row, i) => (
+            <div key={i} style={{
+              display: "flex", gap: 12, padding: "14px 16px",
+              borderBottom: i < transcript.length - 1 ? "1px solid var(--color-border)" : "none",
+              background: (row as typeof row & { critical?: boolean }).critical ? "var(--color-danger-bg)" : "transparent",
+              borderLeft: (row as typeof row & { critical?: boolean }).critical ? "3px solid var(--color-danger)" : "3px solid transparent",
+            }}>
+              <div style={{ width: 52, flexShrink: 0, fontSize: 11, color: "var(--color-text-secondary)", fontFamily: "monospace", paddingTop: 2 }}>{row.time}</div>
+              <div style={{ width: 80, flexShrink: 0 }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 100,
+                  background: row.speaker === "Customer" ? "var(--color-warning-bg)" : "var(--color-bg)",
+                  color: row.speaker === "Customer" ? "var(--color-warning)" : "var(--color-text-secondary)",
+                  border: `1px solid ${row.speaker === "Customer" ? "#fde68a" : "var(--color-border)"}`,
+                }}>
+                  {row.speaker}
+                </span>
+              </div>
+              <div style={{ flex: 1, fontSize: 14, color: (row as typeof row & { critical?: boolean }).critical ? "var(--color-danger)" : "var(--color-text-primary)", fontStyle: "italic", fontWeight: (row as typeof row & { critical?: boolean }).critical ? 500 : 400 }}>
+                &quot;{row.text}&quot;
+                {(row as typeof row & { critical?: boolean }).critical && (
+                  <span style={{ marginLeft: 8, fontSize: 11, fontStyle: "normal", fontWeight: 600, background: "var(--color-danger)", color: "#fff", padding: "1px 6px", borderRadius: 4 }}>
+                    unacknowledged
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Verified vs Hypothesized */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }} className="facts-grid">
+        <div style={{ background: "var(--color-success-bg)", border: "1px solid #6ee7b7", borderRadius: "var(--radius-lg)", padding: 20 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-success)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>
+            Verified — directly observed
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+            {verifiedFacts.map((fact, i) => (
+              <li key={i} style={{ display: "flex", gap: 8, fontSize: 13, color: "var(--color-text-primary)", alignItems: "flex-start" }}>
+                <span style={{ color: "var(--color-success)", fontWeight: 700, flexShrink: 0 }}>✓</span>
+                {fact}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div style={{ background: "var(--color-warning-bg)", border: "1px solid #fde68a", borderRadius: "var(--radius-lg)", padding: 20 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-warning)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+            Hypotheses
+          </div>
+          <div style={{ fontSize: 11, color: "var(--color-warning)", fontStyle: "italic", marginBottom: 12 }}>Requires further testing</div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+            {hypotheses.map((h, i) => (
+              <li key={i} style={{ display: "flex", gap: 8, fontSize: 13, color: "var(--color-text-primary)", alignItems: "flex-start" }}>
+                <span style={{ color: "var(--color-warning)", fontWeight: 700, flexShrink: 0 }}>~</span>
+                {h}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Evidence Timeline */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 4 }}>Evidence Timeline</div>
+        <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 16 }}>Click any screenshot to enlarge.</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {evidenceSteps.map((step) => (
+            <div key={step.step} style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+              <div style={{ padding: "10px 16px", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--color-accent-tint)", color: "var(--color-accent)", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {step.step}
+                </div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)" }}>{step.title}</div>
+                  <div style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>{step.description}</div>
+                </div>
+              </div>
+              <div style={{ padding: 12 }}>
+                <div
+                  style={{ borderRadius: "var(--radius-md)", overflow: "hidden", border: "1px solid var(--color-border)", cursor: "zoom-in", background: "var(--color-bg)" }}
+                  onClick={() => setLightbox({ src: step.image, alt: step.alt })}
+                >
+                  <Image
+                    src={step.image}
+                    alt={step.alt}
+                    width={900}
+                    height={500}
+                    style={{ width: "100%", height: "auto", objectFit: "contain", maxHeight: 360, display: "block" }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Proposed Solution */}
+      <div style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", padding: 20, marginBottom: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 12 }}>Proposed Solution</div>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 16 }}>
+          A pre-deployment preflight check would validate agent configuration before live launch,
+          surfacing issues like missing transfer destinations and unconfigured handoff tools before
+          they affect real customers.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          {[
+            "Validate all enabled tools are fully configured",
+            "Detect prompt/tool mismatches before launch",
+            "Flag missing escalation priority language",
+            "Simulate human handoff request with current config",
+          ].map((item, i) => (
+            <div key={i} style={{ fontSize: 12, color: "var(--color-accent)", background: "var(--color-accent-tint)", border: "1px solid #c4b5fd", borderRadius: "var(--radius-sm)", padding: "8px 12px" }}>
+              → {item}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div style={{ padding: "12px 16px", background: "var(--color-bg)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", fontSize: 11, color: "var(--color-text-secondary)", marginBottom: 8 }}>
+        Screenshots are copies of original session captures. The session identifier visible in screenshot 06 was masked for sharing.
+        This prototype is independent and has no authenticated integration with Vaani.
+      </div>
+
+      <style>{`
+        @media (max-width: 700px) {
+          .facts-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </AppShell>
   );
 }

@@ -5,6 +5,7 @@ import { DEMO_FIXTURE } from "@/lib/demo-fixtures";
 import { runPreflight } from "@/lib/preflight/engine";
 import { runSimulation } from "@/lib/preflight/simulation";
 import { buildExportData, downloadJSON } from "@/lib/export";
+import { AppShell } from "@/components/AppShell";
 import { ConfigPanel } from "@/components/preflight/ConfigPanel";
 import { ResultsPanel } from "@/components/preflight/ResultsPanel";
 
@@ -12,7 +13,29 @@ function cloneConfig(c: AgentConfig): AgentConfig {
   return JSON.parse(JSON.stringify(c));
 }
 
-export default function Home() {
+function Btn({ onClick, variant = "ghost", children, disabled }: { onClick?: () => void; variant?: "primary" | "ghost" | "outline"; children: React.ReactNode; disabled?: boolean }) {
+  const styles: Record<string, React.CSSProperties> = {
+    primary: { background: "var(--color-accent)", color: "#fff", border: "none" },
+    ghost: { background: "transparent", color: "var(--color-text-secondary)", border: "1px solid var(--color-border)" },
+    outline: { background: "var(--color-accent-tint)", color: "var(--color-accent)", border: "1px solid #c4b5fd" },
+  };
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        ...styles[variant],
+        padding: "6px 14px", borderRadius: "var(--radius-md)", fontSize: 13, fontWeight: 500,
+        cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.6 : 1,
+        transition: "all 150ms", display: "inline-flex", alignItems: "center", gap: 6,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+export default function PreflightPage() {
   const [config, setConfig] = useState<AgentConfig>(cloneConfig(DEMO_FIXTURE));
   const [preflight, setPreflight] = useState<PreflightResult | null>(null);
   const [simulation, setSimulation] = useState<SimulationResult | null>(null);
@@ -36,129 +59,65 @@ export default function Home() {
       setPreflight(result);
       setSimulation(null);
       setRunning(false);
-    }, 800);
-  }
-
-  function runSimulationCheck() {
-    const result = runSimulation(config);
-    setSimulation(result);
+    }, 600);
   }
 
   function handleExport() {
     if (!preflight) return;
-    const data = buildExportData(config, preflight, simulation);
-    downloadJSON(data, `vaani-preflight-${Date.now()}.json`);
+    downloadJSON(buildExportData(config, preflight, simulation), `vaani-preflight-${Date.now()}.json`);
   }
 
+  const breadcrumb = <span>Preflight <span style={{ color: "var(--color-border)" }}>·</span> {config.name}</span>;
+  const actions = (
+    <>
+      <Btn onClick={resetDemo} variant="ghost">Reset Demo</Btn>
+      {preflight && <Btn onClick={handleExport} variant="outline">Export Report</Btn>}
+      <Btn onClick={runPreflightCheck} variant="primary" disabled={running}>
+        {running ? "Analyzing…" : "Run Preflight"}
+      </Btn>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="12" cy="12" r="9" />
-              </svg>
-            </div>
-            <div>
-              <div className="font-semibold text-slate-900 text-sm leading-tight">Vaani Preflight</div>
-              <div className="text-xs text-slate-500">Agent Launch Readiness</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <a href="/case-study" className="text-xs text-slate-500 hover:text-slate-700 border border-slate-200 rounded-lg px-3 py-1.5 transition-colors">
-              Case Study
-            </a>
-            <button
-              onClick={resetDemo}
-              className="text-xs text-slate-500 hover:text-slate-700 border border-slate-200 rounded-lg px-3 py-1.5 transition-colors"
-            >
-              Reset Demo
-            </button>
-            {preflight && (
-              <button
-                onClick={handleExport}
-                className="text-xs text-violet-700 hover:text-violet-900 border border-violet-200 bg-violet-50 rounded-lg px-3 py-1.5 transition-colors"
-              >
-                Export Report
-              </button>
-            )}
-          </div>
+    <AppShell breadcrumb={breadcrumb} actions={actions}>
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+          Preflight Checker
         </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        {/* Intro Banner */}
-        <div className="rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-pink-50 p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h1 className="text-lg font-semibold text-slate-900">Real Estate Lead Qualification Agent</h1>
-              <p className="text-sm text-slate-600 mt-0.5">
-                Loaded: Observed case — Amaze Developers, Delhi NCR
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                Independent product concept for Vaani AI Research
-              </p>
-            </div>
-            <button
-              onClick={runPreflightCheck}
-              disabled={running}
-              className="shrink-0 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-md transition-all disabled:opacity-60 text-sm"
-            >
-              {running ? "Analyzing..." : "Run Preflight"}
-            </button>
+        <h1 style={{ fontSize: 22, fontWeight: 600, color: "var(--color-text-primary)", margin: 0 }}>
+          {config.name}
+        </h1>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", marginTop: 4 }}>
+          Amaze Developers · Delhi NCR · Observed case loaded
+        </p>
+        {!preflight && (
+          <div style={{
+            marginTop: 12, padding: "10px 14px", borderRadius: "var(--radius-md)",
+            background: "var(--color-warning-bg)", border: "1px solid #fde68a",
+            fontSize: 12, color: "var(--color-warning)", maxWidth: 520,
+          }}>
+            <strong>Observed:</strong> Customer requested a human agent at ~01:26. Agent continued qualification. transfer_call was disabled with no destination configured.
           </div>
-        </div>
+        )}
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <ConfigPanel
-              config={config}
-              setConfig={setConfig}
-              toolsRef={toolsRef}
-              promptRef={promptRef}
-            />
-          </div>
+      <div style={{ display: "grid", gridTemplateColumns: "55% 1fr", gap: 16, alignItems: "start" }} className="preflight-grid">
+        <ConfigPanel config={config} setConfig={setConfig} toolsRef={toolsRef} promptRef={promptRef} />
+        <ResultsPanel
+          preflight={preflight}
+          prevPreflight={prevPreflight}
+          simulation={simulation}
+          onRunSimulation={() => setSimulation(runSimulation(config))}
+          toolsRef={toolsRef}
+          promptRef={promptRef}
+        />
+      </div>
 
-          <div className="lg:col-span-3 space-y-4">
-            <ResultsPanel
-              preflight={preflight}
-              prevPreflight={prevPreflight}
-              simulation={simulation}
-              onRunSimulation={runSimulationCheck}
-              toolsRef={toolsRef}
-              promptRef={promptRef}
-            />
-          </div>
-        </div>
-
-        {/* Why this matters */}
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
-          <h2 className="text-sm font-semibold text-slate-700 mb-3">Why this matters for Vaani</h2>
-          <p className="text-sm text-slate-600 mb-3">
-            A pre-deployment configuration audit could reduce avoidable setup mistakes and help nontechnical builders reach a usable first agent more confidently.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              "% of agents launched with unresolved critical config issues",
-              "Time to first configuration-ready agent",
-              "% of explicit human requests receiving an appropriate response",
-              "Support tickets related to incomplete tool configuration",
-            ].map((m, i) => (
-              <div key={i} className="text-xs text-slate-500 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2">
-                &#128202; {m}
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-slate-400 mt-3">These are proposed metrics, not measured improvements.</p>
-        </div>
-
-        <footer className="text-center text-xs text-slate-400 pb-4">
-          Independent product concept for Vaani AI Research &middot; Built by Vigasini
-        </footer>
-      </main>
-    </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .preflight-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </AppShell>
   );
 }
