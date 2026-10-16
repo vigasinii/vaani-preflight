@@ -27,12 +27,12 @@ export function runSimulation(config: AgentConfig): SimulationResult {
     status = "incomplete";
     message = "transfer_call is enabled but destination is not configured. Transfer cannot complete.";
     agentResponse =
-      "I understand you'd like to speak with someone directly. Unfortunately I'm not able to connect you right now, but I can note your request and ensure someone follows up with you.";
+      "I'd like to connect you with a real estate agent, but the transfer isn't set up correctly on my end. I'm unable to complete that request right now.";
   } else {
     status = "no_tool";
     message = "No handoff tool is enabled. The agent has no path to fulfil this request.";
     agentResponse =
-      "I hear you — you'd like to speak with a real estate agent. At the moment I'm only able to help with qualification questions, but I'll make sure your request is noted.";
+      "I understand you'd like to speak with a real estate agent. I'm not set up to connect you right now and I can't guarantee a follow-up. I'm sorry I can't help further with this request.";
   }
 
   return {

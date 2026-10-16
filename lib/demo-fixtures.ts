@@ -31,7 +31,7 @@ If the customer requests to speak with a human agent, complete qualification fir
     {
       name: "transfer_call",
       enabled: false,
-      destination: "",
+      destination: "", // broken fixture: no destination configured
       instructions: "Use @transfer_call to transfer to a human agent when requested.",
     },
     {
@@ -47,11 +47,13 @@ If the customer requests to speak with a human agent, complete qualification fir
   ],
 };
 
+// NOTE: FIXED_FIXTURE uses an illustrative phone number (+910000000000).
+// Replace it with a real destination number before deploying to production.
 export const FIXED_FIXTURE: AgentConfig = {
   ...DEMO_FIXTURE,
   systemPrompt: `You are Riya, a voice assistant for Amaze Developers in Delhi NCR.
 
-Your role is to qualify real estate leads. If at any point the customer explicitly requests to speak with a human agent, immediately offer @transfer_call or @schedule_callback — do not continue qualification.
+Your role is to qualify real estate leads. If at any point the customer explicitly requests to speak with a human agent, immediately offer a transfer or callback — do not continue qualification.
 
 Ask in order:
 1. Confirm the caller's name.
@@ -66,7 +68,7 @@ Properties start at ₹80 lakhs. Note budget mismatches.`,
     {
       name: "transfer_call",
       enabled: true,
-      destination: "+919876543210",
+      destination: "+910000000000", // illustrative — replace with real number
       instructions: "Use @transfer_call immediately when the customer requests a human agent.",
     },
     {

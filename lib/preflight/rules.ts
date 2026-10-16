@@ -24,12 +24,19 @@ function detectsHumanHandoff(config: AgentConfig): boolean {
   );
 }
 
-function hasEnabledTool(config: AgentConfig, ...names: string[]): boolean {
-  return config.tools.some((t) => names.includes(t.name) && t.enabled);
-}
-
 function getTool(config: AgentConfig, name: string) {
   return config.tools.find((t) => t.name === name);
+}
+
+function hasReadyHandoffTool(config: AgentConfig): boolean {
+  const E164 = /^\+[1-9]\d{7,14}$/;
+  const transfer = getTool(config, "transfer_call");
+  const transferReady = transfer?.enabled && !!transfer.destination && E164.test(transfer.destination.trim());
+  const agentTransfer = getTool(config, "agent_transfer");
+  const agentTransferEnabled = agentTransfer?.enabled ?? false;
+  const callback = getTool(config, "schedule_callback");
+  const callbackEnabled = callback?.enabled ?? false;
+  return !!(transferReady || agentTransferEnabled || callbackEnabled);
 }
 
 export function runRules(config: AgentConfig): RuleResult[] {
@@ -38,7 +45,7 @@ export function runRules(config: AgentConfig): RuleResult[] {
 
   // Rule 1: handoff tool availability
   {
-    const hasHandoff = hasEnabledTool(config, "transfer_call", "agent_transfer", "schedule_callback");
+    const hasHandoff = hasReadyHandoffTool(config);
     results.push({
       ruleId: "HANDOFF_AVAILABILITY",
       severity: needsHandoff && !hasHandoff ? "critical" : "passed",
@@ -46,7 +53,7 @@ export function runRules(config: AgentConfig): RuleResult[] {
       evidence: needsHandoff
         ? hasHandoff
           ? "Objective requires human handoff and a compatible tool is enabled."
-          : "Objective requires human handoff but no transfer, callback, or agent_transfer tool is enabled."
+          : "Objective requires human handoff but no fully configured handoff tool (transfer_call with destination, agent_transfer, or schedule_callback) is enabled."
         : "Objective does not appear to require human handoff.",
       whyItMatters: "Without an enabled handoff tool, the agent cannot fulfill explicit customer requests to speak with a human.",
       recommendedAction: "Enable transfer_call or schedule_callback and configure the required destination.",
@@ -55,7 +62,29 @@ export function runRules(config: AgentConfig): RuleResult[] {
     });
   }
 
-  // Rule 2: transfer destination
+  // Rule 1b: transfer enabled but incomplete (always runs)
+  {
+    const transfer = getTool(config, "transfer_call");
+    const transferEnabled = transfer?.enabled ?? false;
+    const hasDestination = transferEnabled && !!transfer?.destination && transfer.destination.trim().length > 0;
+    const isValid = hasDestination && E164_REGEX.test(transfer!.destination!.trim());
+    if (transferEnabled && !isValid) {
+      results.push({
+        ruleId: "TRANSFER_ENABLED_INCOMPLETE",
+        severity: "critical",
+        title: !hasDestination ? "Transfer destination missing" : "Transfer destination invalid",
+        evidence: !hasDestination
+          ? "transfer_call is enabled but no destination phone number is configured."
+          : `Destination "${transfer!.destination}" does not match E.164 format (+countrycode number).`,
+        whyItMatters: "A transfer without a valid destination will fail at runtime, leaving the caller without a resolution path.",
+        recommendedAction: "Set a valid E.164 phone number (e.g. +910000000000) as the transfer destination.",
+        affectedField: "tools.transfer_call.destination",
+        passed: false,
+      });
+    }
+  }
+
+  // Rule 2: transfer destination — always emitted for stable denominator
   {
     const transfer = getTool(config, "transfer_call");
     if (transfer?.enabled) {
@@ -75,9 +104,21 @@ export function runRules(config: AgentConfig): RuleResult[] {
           ? `Destination "${transfer.destination}" does not match E.164 format (+countrycode number).`
           : `Destination is set and matches E.164 format.`,
         whyItMatters: "A transfer without a valid destination will fail at runtime, leaving the caller without a resolution path.",
-        recommendedAction: "Set a valid E.164 phone number (e.g. +919876543210) as the transfer destination.",
+        recommendedAction: "Set a valid E.164 phone number (e.g. +910000000000) as the transfer destination.",
         affectedField: "tools.transfer_call.destination",
         passed: isValid,
+      });
+    } else {
+      // Always emit TRANSFER_DESTINATION for stable denominator
+      results.push({
+        ruleId: "TRANSFER_DESTINATION",
+        severity: "passed",
+        title: "Transfer not configured — not required by current tools",
+        evidence: "transfer_call is not enabled; destination check does not apply.",
+        whyItMatters: "A transfer without a valid destination will fail at runtime, leaving the caller without a resolution path.",
+        recommendedAction: "No action required unless you enable transfer_call.",
+        affectedField: "tools.transfer_call.destination",
+        passed: true,
       });
     }
   }
